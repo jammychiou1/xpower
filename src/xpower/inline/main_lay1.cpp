@@ -131,6 +131,7 @@ namespace xpower::main_lay1 {
 
     int16x8_t nt1o = bar_mul_blue(nt1i);
     int16x8_t nt2o = bar_mul_yellow(nt2i);
+
     int16x8_t no0_n = nt2o;
     int16x8_t no1_n = vsubq_s16(nt2o, nt1o);
 
@@ -172,6 +173,42 @@ namespace xpower::main_lay1 {
     h2_4x = vaddq_s16(co1, no1_n);
   }
 
+  inline void ntt5_4x_nof023(
+      int16x8_t f1, int16x8_t f4,
+      int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x) {
+
+    int16x8_t ci0 = vaddq_s16(f1, f4);
+
+    int16x8_t ct0i = ci0;
+    int16x8_t h0 = ct0i;
+    h0_4x = bar_mul_4(h0);
+    int16x8_t ct0i_n = vnegq_s16(ct0i);
+
+    int16x8_t ct1i = ci0;
+
+    int16x8_t ct0o = bar_crude_redc(ct0i_n);
+    int16x8_t ct1o = bar_mul_red(ct1i);
+
+    int16x8_t co0 = vaddq_s16(ct0o, ct1o);
+    int16x8_t co1 = vsubq_s16(ct0o, ct1o);
+
+    int16x8_t ni0 = vsubq_s16(f1, f4);
+
+    int16x8_t nt0i = ni0;
+    int16x8_t nt1i = ni0;
+
+    int16x8_t nt0o = bar_mul_green(nt0i);
+    int16x8_t nt1o = bar_mul_blue(nt1i);
+
+    int16x8_t no0 = nt0o;
+    int16x8_t no1 = vsubq_s16(nt1o, nt0o);
+
+    h1_4x = vaddq_s16(co0, no0);
+    h3_4x = vaddq_s16(co1, no1);
+    h4_4x = vsubq_s16(co0, no0);
+    h2_4x = vsubq_s16(co1, no1);
+  }
+
   inline void ntt10_4x_nof3546(
       int16x8_t f0, int16x8_t f1, int16x8_t f2, int16x8_t f7, int16x8_t f8, int16x8_t f9,
       int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x,
@@ -181,6 +218,27 @@ namespace xpower::main_lay1 {
     ntt5_4x_nof14(f0, f2, f8, h00_4x, h10_4x, h20_4x, h30_4x, h40_4x);
     int16x8_t h01_4x, h11_4x, h21_4x, h31_4x, h41_4x;
     ntt5_4x_nof03(f1, f7, f9, h01_4x, h11_4x, h21_4x, h31_4x, h41_4x);
+    h0_4x = vaddq_s16(h00_4x, h01_4x);
+    h5_4x = vsubq_s16(h00_4x, h01_4x);
+    h2_4x = vaddq_s16(h10_4x, h11_4x);
+    h7_4x = vsubq_s16(h10_4x, h11_4x);
+    h4_4x = vaddq_s16(h20_4x, h21_4x);
+    h9_4x = vsubq_s16(h20_4x, h21_4x);
+    h6_4x = vaddq_s16(h30_4x, h31_4x);
+    h1_4x = vsubq_s16(h30_4x, h31_4x);
+    h8_4x = vaddq_s16(h40_4x, h41_4x);
+    h3_4x = vsubq_s16(h40_4x, h41_4x);
+  }
+
+  inline void ntt10_4x_nof35467(
+      int16x8_t f0, int16x8_t f1, int16x8_t f2, int16x8_t f8, int16x8_t f9,
+      int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x,
+      int16x8_t &h5_4x, int16x8_t &h6_4x, int16x8_t &h7_4x, int16x8_t &h8_4x, int16x8_t &h9_4x) {
+
+    int16x8_t h00_4x, h10_4x, h20_4x, h30_4x, h40_4x;
+    ntt5_4x_nof14(f0, f2, f8, h00_4x, h10_4x, h20_4x, h30_4x, h40_4x);
+    int16x8_t h01_4x, h11_4x, h21_4x, h31_4x, h41_4x;
+    ntt5_4x_nof023(f1, f9, h01_4x, h11_4x, h21_4x, h31_4x, h41_4x);
     h0_4x = vaddq_s16(h00_4x, h01_4x);
     h5_4x = vsubq_s16(h00_4x, h01_4x);
     h2_4x = vaddq_s16(h10_4x, h11_4x);
