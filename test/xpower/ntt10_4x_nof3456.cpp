@@ -26,22 +26,22 @@ bool run_testcase(inout testcase) {
       h0_4x, h1_4x, h2_4x, h3_4x, h4_4x,
       h5_4x, h6_4x, h7_4x, h8_4x, h9_4x);
 
-  output h_4xs = {};
+  output out = {};
 
-  vst1q_s16(&h_4xs[0][0], h0_4x);
-  vst1q_s16(&h_4xs[1][0], h1_4x);
-  vst1q_s16(&h_4xs[2][0], h2_4x);
-  vst1q_s16(&h_4xs[3][0], h3_4x);
-  vst1q_s16(&h_4xs[4][0], h4_4x);
-  vst1q_s16(&h_4xs[5][0], h5_4x);
-  vst1q_s16(&h_4xs[6][0], h6_4x);
-  vst1q_s16(&h_4xs[7][0], h7_4x);
-  vst1q_s16(&h_4xs[8][0], h8_4x);
-  vst1q_s16(&h_4xs[9][0], h9_4x);
+  vst1q_s16(&out[0][0], h0_4x);
+  vst1q_s16(&out[1][0], h1_4x);
+  vst1q_s16(&out[2][0], h2_4x);
+  vst1q_s16(&out[3][0], h3_4x);
+  vst1q_s16(&out[4][0], h4_4x);
+  vst1q_s16(&out[5][0], h5_4x);
+  vst1q_s16(&out[6][0], h6_4x);
+  vst1q_s16(&out[7][0], h7_4x);
+  vst1q_s16(&out[8][0], h8_4x);
+  vst1q_s16(&out[9][0], h9_4x);
 
   for (int i = 0; i < 10; i++) {
     for (int k = 0; k < 8; k++) {
-      if (sntrup761::utils::center_lift<int16_t>(h_4xs[i][k]) != testcase.second[i][k]) {
+      if (sntrup761::utils::center_lift<int16_t>(out[i][k]) != testcase.second[i][k]) {
         return false;
       }
     }
@@ -64,7 +64,7 @@ inout testcase1(int idx) {
     res.first[4][k] = fs[8];
     res.first[5][k] = fs[9];
     for (int i = 0; i < 10; i++) {
-      res.second[i][k] = sntrup761::utils::center_lift<int16_t>(4 * hs[i]);
+      res.second[i][k] = sntrup761::utils::center_lift<int16_t>(4 * int64_t(hs[i]));
     }
   }
   return res;

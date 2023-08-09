@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <arm_neon.h>
 
+#include "interface/sntrup761.h"
 #include "zq_neon.h"
 
 namespace xpower::ntt5 {
@@ -25,7 +26,7 @@ namespace xpower::main_lay1 {
   };
 
   const static int16x8_t shared_consts = {
-    4591, shared::_4_bar
+    sntrup761::q, shared::_4_bar
   };
 
   inline int16x8_t bar_mul_red(int16x8_t in) {
@@ -114,11 +115,12 @@ namespace xpower::main_lay1 {
     int16x8_t h0 = vaddq_s16(f0, ct0i);
     h0_4x = bar_mul_4(h0);
     int16x8_t f0_4x = vshlq_n_s16(f0, 2);
-    int16x8_t ct0i_n = vsubq_s16(f0_4x, ct0i);
+
+    int16x8_t ct0o = vsubq_s16(f0_4x, ct0i);
+    ct0o = bar_crude_redc(ct0o);
 
     int16x8_t ct1i_n = ci1;
 
-    int16x8_t ct0o = bar_crude_redc(ct0i_n);
     int16x8_t ct1o_n = bar_mul_red(ct1i_n);
 
     int16x8_t co0 = vsubq_s16(ct0o, ct1o_n);
@@ -151,11 +153,12 @@ namespace xpower::main_lay1 {
     int16x8_t ct0i = vaddq_s16(ci0, ci1);
     int16x8_t h0 = ct0i;
     h0_4x = bar_mul_4(h0);
-    int16x8_t ct0i_n = vnegq_s16(ct0i);
+
+    int16x8_t ct0o = vnegq_s16(ct0i);
+    ct0o = bar_crude_redc(ct0o);
 
     int16x8_t ct1i = vsubq_s16(ci0, ci1);
 
-    int16x8_t ct0o = bar_crude_redc(ct0i_n);
     int16x8_t ct1o = bar_mul_red(ct1i);
 
     int16x8_t co0 = vaddq_s16(ct0o, ct1o);
@@ -182,11 +185,12 @@ namespace xpower::main_lay1 {
     int16x8_t ct0i = ci0;
     int16x8_t h0 = ct0i;
     h0_4x = bar_mul_4(h0);
-    int16x8_t ct0i_n = vnegq_s16(ct0i);
+
+    int16x8_t ct0o = vnegq_s16(ct0i);
+    ct0o = bar_crude_redc(ct0o);
 
     int16x8_t ct1i = ci0;
 
-    int16x8_t ct0o = bar_crude_redc(ct0i_n);
     int16x8_t ct1o = bar_mul_red(ct1i);
 
     int16x8_t co0 = vaddq_s16(ct0o, ct1o);
