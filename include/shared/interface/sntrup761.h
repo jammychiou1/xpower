@@ -3,7 +3,9 @@
 
 #include <cstdint>
 
-// constexpr int16_t P = 761;
-// constexpr int16_t Q = 4591;
+namespace sntrup761 {
+  constexpr int16_t p = 761;
+  constexpr int16_t q = 4591;
+}
 
 #endif // SNTRUP761_H
