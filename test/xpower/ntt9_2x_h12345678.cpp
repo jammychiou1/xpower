@@ -44,7 +44,7 @@ bool run_testcase(inout testcase) {
 
   for (int i = 0; i < 9; i++) {
     for (int k = 0; k < 8; k++) {
-      if (sntrup761::utils::center_lift<int16_t>(out[i][k]) != testcase.second[i][k]) {
+      if (sntrup761::utils::center_lift(out[i][k]) != testcase.second[i][k]) {
         return false;
       }
     }
@@ -72,7 +72,7 @@ inout testcase1(int idx) {
 
     res.second[0][k] = hs[0];
     for (int i = 1; i < 9; i++) {
-      res.second[i][k] = sntrup761::utils::center_lift<int16_t>(2 * int64_t(hs[i]));
+      res.second[i][k] = sntrup761::utils::center_lift(2 * int64_t(hs[i]));
     }
   }
   return res;

@@ -5,16 +5,16 @@
 #include "zq_neon.h"
 
 namespace xpower::ntt9 {
-  constexpr int16_t red = -621;
-  constexpr int16_t blue = -803;
-  constexpr int16_t green = 1891;
-  constexpr int16_t red_bar = -4432;
-  constexpr int16_t blue_bar = -5731;
-  constexpr int16_t green_bar = 13497;
+  const int16_t red = -621;
+  const int16_t blue = -803;
+  const int16_t green = 1891;
+  const int16_t red_bar = -4432;
+  const int16_t blue_bar = -5731;
+  const int16_t green_bar = 13497;
 }
 
 namespace xpower::shared {
-  constexpr int16_t _2_bar = 14;
+  const int16_t _2_bar = 14;
 }
 
 namespace xpower::main_lay2 {
