@@ -94,8 +94,8 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = xpower::montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = xpower::montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
   }
 
   inline void main_karatsuba(
@@ -131,7 +131,60 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = xpower::montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = xpower::montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+  }
+
+  // i need to be even
+  inline void main_radix2(
+      int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
+      int16x8_t &c0, int16x8_t &c1) {
+
+    int i_sqrt = 3 * i % 10;
+    int j_sqrt = 5 * j % 9;
+    int16_t sqrt_tw = table[i_sqrt][j_sqrt].first;
+    int16_t sqrt_tw_bar = table[i_sqrt][j_sqrt].second;
+    int16_t inv_sqrt_tw = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].first;
+    int16_t inv_sqrt_tw_bar = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].second;
+
+    int16x8_t consts = {sqrt_tw, sqrt_tw_bar, inv_sqrt_tw, inv_sqrt_tw_bar, sntrup761::q, shared::q_prim, 0, 0};
+
+    a0 = barret::crude_redc<4>(a0, consts);
+    b0 = barret::crude_redc<4>(b0, consts);
+    int16x8_t sqta1 = barret::multiply<0, 1, 4>(a1, consts, consts, consts);
+    int16x8_t sqtb1 = barret::multiply<0, 1, 4>(b1, consts, consts, consts);
+
+    int16x8_t ha0 = vaddq_s16(a0, sqta1);
+    int16x8_t ha1 = vsubq_s16(a0, sqta1);
+    int16x8_t hb0 = vaddq_s16(b0, sqtb1);
+    int16x8_t hb1 = vsubq_s16(b0, sqtb1);
+
+    int16x8_t sqthb0 = barret::multiply<0, 1, 4>(hb0, consts, consts, consts);
+    int16x8_t sqthb1 = barret::multiply<0, 1, 4>(hb1, consts, consts, consts);
+    int16x8_t nsqthb1 = vnegq_s16(sqthb1);
+
+    int32x4_t acc00 = {};
+    int32x4_t acc01 = {};
+
+    mla_tmv_8(sqthb0, hb0, ha0, acc00, acc01);
+
+    int32x4_t acc10 = {};
+    int32x4_t acc11 = {};
+
+    mla_tmv_8(nsqthb1, hb1, ha1, acc10, acc11);
+
+    int32x4_t acc0 = vaddq_s32(acc00, acc10);
+    int32x4_t acc1 = vaddq_s32(acc01, acc11);
+    int32x4_t acc2 = vsubq_s32(acc00, acc10);
+    int32x4_t acc3 = vsubq_s32(acc01, acc11);
+
+    int16x8_t c0_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c0_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+    int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+
+    c0 = montgomery::redc<5, 4>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<5, 4>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = barret::multiply<2, 3, 4>(c1, consts, consts, consts);
   }
 }
