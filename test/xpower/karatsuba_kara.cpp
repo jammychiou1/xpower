@@ -41,7 +41,7 @@ bool run_testcase(inout testcase) {
   int j = testcase.first.j;
 
   int16x8_t c0_n1095x, c1_n1095x;
-  xpower::basemul::main_karatsuba(a0, a1, b0, b1, i, j, c0_n1095x, c1_n1095x);
+  xpower::basemul::karatsuba_kara(a0, a1, b0, b1, i, j, c0_n1095x, c1_n1095x);
 
   output out = {};
   vst1q_s16(&out[0], c0_n1095x);

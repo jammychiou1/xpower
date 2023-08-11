@@ -40,12 +40,12 @@ bool run_testcase(inout testcase) {
   int i = testcase.first.i;
   int j = testcase.first.j;
 
-  int16x8_t c0_n2190x, c1_n2190x;
-  xpower::basemul::main_radix2(a0, a1, b0, b1, i, j, c0_n2190x, c1_n2190x);
+  int16x8_t c0_n1095x, c1_n1095x;
+  xpower::basemul::schoolbook(a0, a1, b0, b1, i, j, c0_n1095x, c1_n1095x);
 
   output out = {};
-  vst1q_s16(&out[0], c0_n2190x);
-  vst1q_s16(&out[8], c1_n2190x);
+  vst1q_s16(&out[0], c0_n1095x);
+  vst1q_s16(&out[8], c1_n1095x);
 
   for (int k = 0; k < 16; k++) {
     if (sntrup761::utils::center_lift(out[k]) != testcase.second[k]) {
@@ -66,7 +66,7 @@ inout factory(std::array<int16_t, 16> a, std::array<int16_t, 16> b, int i, int j
   int16_t weight = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i) * sntrup761::utils::gen_pow(w9, j));
   std::array<int16_t, 16> c = weighted_conv_ref<16>(a, b, weight);
   for (int k = 0; k < 16; k++) {
-    testcase.second[k] = sntrup761::utils::center_lift(-2190 * c[k]);
+    testcase.second[k] = sntrup761::utils::center_lift(-1095 * c[k]);
   }
   return testcase;
 }
@@ -109,12 +109,12 @@ inout testcase2(int i, int j) {
 
 int main() {
   assert(run_testcase(testcase0()));
-  for (int i = 0; i < 10; i += 2) {
+  for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 9; j++) {
       assert(run_testcase(testcase1(i, j)));
     }
   }
-  for (int i = 0; i < 10; i += 2) {
+  for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 9; j++) {
       assert(run_testcase(testcase2(i, j)));
     }

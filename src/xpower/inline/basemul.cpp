@@ -165,7 +165,7 @@ namespace xpower::basemul {
     mls_col_8<7>(vextq_s16(tm_row, tm_col, 1), vec, acc0, acc1);
   }
 
-  inline void main_schoolbook(
+  inline void schoolbook(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
@@ -201,7 +201,7 @@ namespace xpower::basemul {
     c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
   }
 
-  inline void main_karatsuba(
+  inline void karatsuba(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
@@ -239,7 +239,7 @@ namespace xpower::basemul {
   }
 
   // i need to be even
-  inline void main_radix2(
+  inline void radix2(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
@@ -291,7 +291,7 @@ namespace xpower::basemul {
     c1 = barret::multiply<2, 3, 4>(c1, consts, consts, consts);
   }
 
-  inline void main_karatsuba_kara(
+  inline void karatsuba_kara(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
@@ -329,7 +329,7 @@ namespace xpower::basemul {
   }
 
   // i need to be even
-  inline void main_radix2_kara(
+  inline void radix2_kara(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 

@@ -41,7 +41,7 @@ bool run_testcase(inout testcase) {
   int j = testcase.first.j;
 
   int16x8_t c0_n2190x, c1_n2190x;
-  xpower::basemul::main_radix2_kara(a0, a1, b0, b1, i, j, c0_n2190x, c1_n2190x);
+  xpower::basemul::radix2(a0, a1, b0, b1, i, j, c0_n2190x, c1_n2190x);
 
   output out = {};
   vst1q_s16(&out[0], c0_n2190x);
