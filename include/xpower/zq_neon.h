@@ -67,4 +67,14 @@ namespace xpower::lhalf {
   }
 }
 
+namespace xpower::montgomery {
+  template <int PRIM_LANE, int MOD_LANE>
+  inline int16x8_t redc(int16x8_t lhalf, int16x8_t hhalf, int16x8_t prim, int16x8_t mod) {
+    int16x8_t l = vmulq_laneq_s16_asm<PRIM_LANE>(lhalf, prim);
+    int16x8_t diff_2x = vqdmulhq_laneq_s16_asm<MOD_LANE>(l, mod);
+    int16x8_t diff = vshrq_n_s16(diff_2x, 1);
+    return vsubq_s16(hhalf, diff);
+  }
+}
+
 #endif // ZQ_NEON_H

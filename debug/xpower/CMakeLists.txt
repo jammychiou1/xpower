@@ -1,4 +1,4 @@
-set(DBGS ntt10_4x_nof3456 ntt10_4x_nof34567 ntt5_4x_nof14 ntt5_4x_nof03 ntt5_4x_nof023 ntt9_2x_h12345678)
+set(DBGS ntt10_4x_nof3456 ntt10_4x_nof34567 ntt5_4x_nof14 ntt5_4x_nof03 ntt5_4x_nof023 ntt9_2x_h12345678 main_schoolbook)
 
 foreach(X IN LISTS DBGS)
   add_executable("${X}_dbg" "${X}.cpp")

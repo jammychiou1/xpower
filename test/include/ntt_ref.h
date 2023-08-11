@@ -27,4 +27,26 @@ std::array<int16_t, SZ> ntt_ref(std::array<int16_t, SZ> fs) {
   return hs;
 }
 
+template <int SZ>
+std::array<int16_t, SZ> weighted_conv_ref(std::array<int16_t, SZ> a, std::array<int16_t, SZ> b, int16_t weight) {
+  std::array<int16_t, SZ> c = {};
+
+  for (int k = 0; k < SZ; k++) {
+    int64_t ck = 0;
+    for (int dk = 0; dk < SZ; dk++) {
+      int k_a = (k + dk) % 16;
+      int k_b = (16 - dk) % 16;
+      if (k_a + k_b < 16) {
+        ck += int64_t(a[k_a]) * b[k_b];
+      }
+      else {
+        ck += int64_t(a[k_a]) * b[k_b] * weight;
+      }
+      ck = sntrup761::utils::center_lift(ck);
+    }
+    c[k] = ck;
+  }
+  return c;
+}
+
 #endif // NTT_REF_H
