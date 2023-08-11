@@ -24,6 +24,109 @@ namespace xpower::basemul {
     return res;
   } ();
 
+
+  inline void mla_tmv_8_kara(int16x8_t tm_row, int16x8_t tm_col, int16x8_t vec,
+      int32x4_t &acc0, int32x4_t &acc1) {
+
+    int16x8_t tm_rc0 = vextq_s16(tm_row, tm_col, 4);
+    int16x8_t tm_rc1 = vsubq_s16(tm_rc0, tm_col);
+    int16x4_t tm_rcn1_col = vsub_s16(vget_low_s16(tm_row), vget_high_s16(tm_row));
+    int16x8_t tm_rcn1_col_rot;
+    tm_rcn1_col_rot = vreinterpretq_s16_u64(
+        vcopyq_lane_u64(
+          vreinterpretq_u64_s16(tm_rcn1_col_rot), 1,
+          vreinterpret_u64_s16(tm_rcn1_col), 0));
+
+    {
+      int16x4_t vec_sum = vadd_s16(vget_low_s16(vec), vget_high_s16(vec));
+      int16x4_t tmp;
+
+      int32x4_t acc = vmull_high_lane_s16(tm_rc0, vec_sum, 0);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 3);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 1);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 2);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 2);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 1);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 3);
+
+      acc0 = vaddq_s32(acc0, acc);
+      acc1 = vaddq_s32(acc1, acc);
+    }
+    {
+      int16x8_t tmp;
+
+      tmp = tm_rc1;
+      acc1 = vmlsl_high_laneq_s16(acc1, tmp, vec, 0);
+      acc0 = vmlal_laneq_s16(acc0, vget_low_s16(tmp), vec, 4);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 7);
+      acc1 = vmlsl_high_laneq_s16(acc1, tmp, vec, 1);
+      acc0 = vmlal_laneq_s16(acc0, vget_low_s16(tmp), vec, 5);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 6);
+      acc1 = vmlsl_high_laneq_s16(acc1, tmp, vec, 2);
+      acc0 = vmlal_laneq_s16(acc0, vget_low_s16(tmp), vec, 6);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 5);
+      acc1 = vmlsl_high_laneq_s16(acc1, tmp, vec, 3);
+      acc0 = vmlal_laneq_s16(acc0, vget_low_s16(tmp), vec, 7);
+    }
+  }
+
+  inline void mls_tmv_8_kara(int16x8_t tm_row, int16x8_t tm_col, int16x8_t vec,
+      int32x4_t &acc0, int32x4_t &acc1) {
+
+    int16x8_t tm_rc0 = vextq_s16(tm_row, tm_col, 4);
+    int16x8_t tm_rc1 = vsubq_s16(tm_rc0, tm_col);
+    int16x4_t tm_rcn1_col = vsub_s16(vget_low_s16(tm_row), vget_high_s16(tm_row));
+    int16x8_t tm_rcn1_col_rot;
+    tm_rcn1_col_rot = vreinterpretq_s16_u64(
+        vcopyq_lane_u64(
+          vreinterpretq_u64_s16(tm_rcn1_col_rot), 1,
+          vreinterpret_u64_s16(tm_rcn1_col), 0));
+
+    {
+      int16x4_t vec_sum = vadd_s16(vget_low_s16(vec), vget_high_s16(vec));
+      int16x4_t tmp;
+
+      int32x4_t acc = vmull_high_lane_s16(tm_rc0, vec_sum, 0);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 3);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 1);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 2);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 2);
+
+      tmp = vext_s16(vget_low_s16(tm_rc0), vget_high_s16(tm_rc0), 1);
+      acc = vmlal_lane_s16(acc, tmp, vec_sum, 3);
+
+      acc0 = vsubq_s32(acc0, acc);
+      acc1 = vsubq_s32(acc1, acc);
+    }
+    {
+      int16x8_t tmp;
+
+      tmp = tm_rc1;
+      acc1 = vmlal_high_laneq_s16(acc1, tmp, vec, 0);
+      acc0 = vmlsl_laneq_s16(acc0, vget_low_s16(tmp), vec, 4);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 7);
+      acc1 = vmlal_high_laneq_s16(acc1, tmp, vec, 1);
+      acc0 = vmlsl_laneq_s16(acc0, vget_low_s16(tmp), vec, 5);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 6);
+      acc1 = vmlal_high_laneq_s16(acc1, tmp, vec, 2);
+      acc0 = vmlsl_laneq_s16(acc0, vget_low_s16(tmp), vec, 6);
+
+      tmp = vextq_s16(tm_rcn1_col_rot, tm_rc1, 5);
+      acc1 = vmlal_high_laneq_s16(acc1, tmp, vec, 3);
+      acc0 = vmlsl_laneq_s16(acc0, vget_low_s16(tmp), vec, 7);
+    }
+  }
+
   template <int LANE>
   inline void mla_col_8(int16x8_t col, int16x8_t scl, int32x4_t &acc0, int32x4_t &acc1) {
     acc0 = vmlal_laneq_s16(acc0, vget_low_s16(col), scl, LANE);
@@ -172,6 +275,96 @@ namespace xpower::basemul {
     int32x4_t acc11 = {};
 
     mla_tmv_8(nsqthb1, hb1, ha1, acc10, acc11);
+
+    int32x4_t acc0 = vaddq_s32(acc00, acc10);
+    int32x4_t acc1 = vaddq_s32(acc01, acc11);
+    int32x4_t acc2 = vsubq_s32(acc00, acc10);
+    int32x4_t acc3 = vsubq_s32(acc01, acc11);
+
+    int16x8_t c0_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c0_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+    int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+
+    c0 = montgomery::redc<5, 4>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<5, 4>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = barret::multiply<2, 3, 4>(c1, consts, consts, consts);
+  }
+
+  inline void main_karatsuba_kara(
+      int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
+      int16x8_t &c0, int16x8_t &c1) {
+
+    int16_t tw = table[i][j].first;
+    int16_t tw_bar = table[i][j].second;
+
+    int16x8_t consts = {tw, tw_bar, sntrup761::q, shared::q_prim, 0, 0, 0, 0};
+
+    a0 = barret::crude_redc<2>(a0, consts);
+    a1 = barret::crude_redc<2>(a1, consts);
+    b0 = barret::crude_redc<2>(b0, consts);
+    b1 = barret::crude_redc<2>(b1, consts);
+
+    int16x8_t tb0 = barret::multiply<0, 1, 2>(b0, consts, consts, consts);
+    int16x8_t tb1 = barret::multiply<0, 1, 2>(b1, consts, consts, consts);
+
+    int32x4_t acc0 = {};
+    int32x4_t acc1 = {};
+
+    mla_tmv_8_kara(tb1, b0, vaddq_s16(a0, a1), acc0, acc1);
+
+    int32x4_t acc2 = acc0;
+    int32x4_t acc3 = acc1;
+
+    mla_tmv_8_kara(vsubq_s16(tb0, tb1), vsubq_s16(tb1, b0), a1, acc0, acc1);
+    mls_tmv_8_kara(vsubq_s16(tb1, b0), vsubq_s16(b0, b1), a0, acc2, acc3);
+
+    int16x8_t c0_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c0_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc0), vreinterpretq_s16_s32(acc1));
+    int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+    int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
+
+    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+  }
+
+  // i need to be even
+  inline void main_radix2_kara(
+      int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
+      int16x8_t &c0, int16x8_t &c1) {
+
+    int i_sqrt = 3 * i % 10;
+    int j_sqrt = 5 * j % 9;
+    int16_t sqrt_tw = table[i_sqrt][j_sqrt].first;
+    int16_t sqrt_tw_bar = table[i_sqrt][j_sqrt].second;
+    int16_t inv_sqrt_tw = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].first;
+    int16_t inv_sqrt_tw_bar = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].second;
+
+    int16x8_t consts = {sqrt_tw, sqrt_tw_bar, inv_sqrt_tw, inv_sqrt_tw_bar, sntrup761::q, shared::q_prim, 0, 0};
+
+    a0 = barret::crude_redc<4>(a0, consts);
+    b0 = barret::crude_redc<4>(b0, consts);
+    int16x8_t sqta1 = barret::multiply<0, 1, 4>(a1, consts, consts, consts);
+    int16x8_t sqtb1 = barret::multiply<0, 1, 4>(b1, consts, consts, consts);
+
+    int16x8_t ha0 = vaddq_s16(a0, sqta1);
+    int16x8_t ha1 = vsubq_s16(a0, sqta1);
+    int16x8_t hb0 = vaddq_s16(b0, sqtb1);
+    int16x8_t hb1 = vsubq_s16(b0, sqtb1);
+
+    int16x8_t sqthb0 = barret::multiply<0, 1, 4>(hb0, consts, consts, consts);
+    int16x8_t sqthb1 = barret::multiply<0, 1, 4>(hb1, consts, consts, consts);
+    int16x8_t nsqthb1 = vnegq_s16(sqthb1);
+
+    int32x4_t acc00 = {};
+    int32x4_t acc01 = {};
+
+    mla_tmv_8_kara(sqthb0, hb0, ha0, acc00, acc01);
+
+    int32x4_t acc10 = {};
+    int32x4_t acc11 = {};
+
+    mla_tmv_8_kara(nsqthb1, hb1, ha1, acc10, acc11);
 
     int32x4_t acc0 = vaddq_s32(acc00, acc10);
     int32x4_t acc1 = vaddq_s32(acc01, acc11);
