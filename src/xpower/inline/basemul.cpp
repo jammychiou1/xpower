@@ -10,20 +10,28 @@ namespace xpower::shared {
   const int16_t q_prim = 15631;
 }
 namespace xpower::basemul {
-  constexpr std::array<std::array<std::pair<int16_t, int16_t>, 9>, 10> table = [] {
-    std::array<std::array<std::pair<int16_t, int16_t>, 9>, 10> res = {};
+  constexpr std::array<std::array<std::array<int16_t, 8>, 9>, 10> table = [] {
+    std::array<std::array<std::array<int16_t, 8>, 9>, 10> res = {};
     int16_t prim_root = 11;
     int16_t w10 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 10);
     int16_t w9 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 9);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 9; j++) {
-        res[i][j].first = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i) * sntrup761::utils::gen_pow(w9, j));
-        res[i][j].second = sntrup761::utils::gen_bar(res[i][j].first);
+        res[i][j][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i) * sntrup761::utils::gen_pow(w9, j));
+        res[i][j][1] = sntrup761::utils::gen_bar(res[i][j][0]);
+
+        res[i][j][2] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, 3 * i) * sntrup761::utils::gen_pow(w9, 5 * j));
+        res[i][j][3] = sntrup761::utils::gen_bar(res[i][j][2]);
+
+        res[i][j][4] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, 7 * i) * sntrup761::utils::gen_pow(w9, 4 * j));
+        res[i][j][5] = sntrup761::utils::gen_bar(res[i][j][4]);
+
+        res[i][j][6] = sntrup761::q;
+        res[i][j][7] = shared::q_prim;
       }
     }
     return res;
   } ();
-
 
   inline void mla_tmv_8_kara(int16x8_t tm_row, int16x8_t tm_col, int16x8_t vec,
       int32x4_t &acc0, int32x4_t &acc1) {
@@ -169,18 +177,15 @@ namespace xpower::basemul {
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
-    int16_t tw = table[i][j].first;
-    int16_t tw_bar = table[i][j].second;
+    int16x8_t consts = vld1q_s16(&table[i][j][0]);
 
-    int16x8_t consts = {tw, tw_bar, sntrup761::q, shared::q_prim, 0, 0, 0, 0};
+    a0 = barret::crude_redc<6>(a0, consts);
+    a1 = barret::crude_redc<6>(a1, consts);
+    b0 = barret::crude_redc<6>(b0, consts);
+    b1 = barret::crude_redc<6>(b1, consts);
 
-    a0 = barret::crude_redc<2>(a0, consts);
-    a1 = barret::crude_redc<2>(a1, consts);
-    b0 = barret::crude_redc<2>(b0, consts);
-    b1 = barret::crude_redc<2>(b1, consts);
-
-    int16x8_t tb0 = barret::multiply<0, 1, 2>(b0, consts, consts, consts);
-    int16x8_t tb1 = barret::multiply<0, 1, 2>(b1, consts, consts, consts);
+    int16x8_t tb0 = barret::multiply<0, 1, 6>(b0, consts, consts, consts);
+    int16x8_t tb1 = barret::multiply<0, 1, 6>(b1, consts, consts, consts);
 
     int32x4_t acc0 = {};
     int32x4_t acc1 = {};
@@ -197,26 +202,23 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+    c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
   }
 
   inline void karatsuba(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
-    int16_t tw = table[i][j].first;
-    int16_t tw_bar = table[i][j].second;
+    int16x8_t consts = vld1q_s16(&table[i][j][0]);
 
-    int16x8_t consts = {tw, tw_bar, sntrup761::q, shared::q_prim, 0, 0, 0, 0};
+    a0 = barret::crude_redc<6>(a0, consts);
+    a1 = barret::crude_redc<6>(a1, consts);
+    b0 = barret::crude_redc<6>(b0, consts);
+    b1 = barret::crude_redc<6>(b1, consts);
 
-    a0 = barret::crude_redc<2>(a0, consts);
-    a1 = barret::crude_redc<2>(a1, consts);
-    b0 = barret::crude_redc<2>(b0, consts);
-    b1 = barret::crude_redc<2>(b1, consts);
-
-    int16x8_t tb0 = barret::multiply<0, 1, 2>(b0, consts, consts, consts);
-    int16x8_t tb1 = barret::multiply<0, 1, 2>(b1, consts, consts, consts);
+    int16x8_t tb0 = barret::multiply<0, 1, 6>(b0, consts, consts, consts);
+    int16x8_t tb1 = barret::multiply<0, 1, 6>(b1, consts, consts, consts);
 
     int32x4_t acc0 = {};
     int32x4_t acc1 = {};
@@ -234,8 +236,8 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+    c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
   }
 
   // i need to be even
@@ -243,27 +245,20 @@ namespace xpower::basemul {
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
-    int i_sqrt = 3 * i % 10;
-    int j_sqrt = 5 * j % 9;
-    int16_t sqrt_tw = table[i_sqrt][j_sqrt].first;
-    int16_t sqrt_tw_bar = table[i_sqrt][j_sqrt].second;
-    int16_t inv_sqrt_tw = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].first;
-    int16_t inv_sqrt_tw_bar = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].second;
+    int16x8_t consts = vld1q_s16(&table[i][j][0]);
 
-    int16x8_t consts = {sqrt_tw, sqrt_tw_bar, inv_sqrt_tw, inv_sqrt_tw_bar, sntrup761::q, shared::q_prim, 0, 0};
-
-    a0 = barret::crude_redc<4>(a0, consts);
-    b0 = barret::crude_redc<4>(b0, consts);
-    int16x8_t sqta1 = barret::multiply<0, 1, 4>(a1, consts, consts, consts);
-    int16x8_t sqtb1 = barret::multiply<0, 1, 4>(b1, consts, consts, consts);
+    a0 = barret::crude_redc<6>(a0, consts);
+    b0 = barret::crude_redc<6>(b0, consts);
+    int16x8_t sqta1 = barret::multiply<2, 3, 6>(a1, consts, consts, consts);
+    int16x8_t sqtb1 = barret::multiply<2, 3, 6>(b1, consts, consts, consts);
 
     int16x8_t ha0 = vaddq_s16(a0, sqta1);
     int16x8_t ha1 = vsubq_s16(a0, sqta1);
     int16x8_t hb0 = vaddq_s16(b0, sqtb1);
     int16x8_t hb1 = vsubq_s16(b0, sqtb1);
 
-    int16x8_t sqthb0 = barret::multiply<0, 1, 4>(hb0, consts, consts, consts);
-    int16x8_t sqthb1 = barret::multiply<0, 1, 4>(hb1, consts, consts, consts);
+    int16x8_t sqthb0 = barret::multiply<2, 3, 6>(hb0, consts, consts, consts);
+    int16x8_t sqthb1 = barret::multiply<2, 3, 6>(hb1, consts, consts, consts);
     int16x8_t nsqthb1 = vnegq_s16(sqthb1);
 
     int32x4_t acc00 = {};
@@ -286,27 +281,24 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = montgomery::redc<5, 4>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = montgomery::redc<5, 4>(c1_lhalf, c1_hhalf, consts, consts);
-    c1 = barret::multiply<2, 3, 4>(c1, consts, consts, consts);
+    c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = barret::multiply<4, 5, 6>(c1, consts, consts, consts);
   }
 
   inline void karatsuba_kara(
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
-    int16_t tw = table[i][j].first;
-    int16_t tw_bar = table[i][j].second;
+    int16x8_t consts = vld1q_s16(&table[i][j][0]);
 
-    int16x8_t consts = {tw, tw_bar, sntrup761::q, shared::q_prim, 0, 0, 0, 0};
+    a0 = barret::crude_redc<6>(a0, consts);
+    a1 = barret::crude_redc<6>(a1, consts);
+    b0 = barret::crude_redc<6>(b0, consts);
+    b1 = barret::crude_redc<6>(b1, consts);
 
-    a0 = barret::crude_redc<2>(a0, consts);
-    a1 = barret::crude_redc<2>(a1, consts);
-    b0 = barret::crude_redc<2>(b0, consts);
-    b1 = barret::crude_redc<2>(b1, consts);
-
-    int16x8_t tb0 = barret::multiply<0, 1, 2>(b0, consts, consts, consts);
-    int16x8_t tb1 = barret::multiply<0, 1, 2>(b1, consts, consts, consts);
+    int16x8_t tb0 = barret::multiply<0, 1, 6>(b0, consts, consts, consts);
+    int16x8_t tb1 = barret::multiply<0, 1, 6>(b1, consts, consts, consts);
 
     int32x4_t acc0 = {};
     int32x4_t acc1 = {};
@@ -324,8 +316,8 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = montgomery::redc<3, 2>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = montgomery::redc<3, 2>(c1_lhalf, c1_hhalf, consts, consts);
+    c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
   }
 
   // i need to be even
@@ -333,27 +325,20 @@ namespace xpower::basemul {
       int16x8_t a0, int16x8_t a1, int16x8_t b0, int16x8_t b1, int i, int j,
       int16x8_t &c0, int16x8_t &c1) {
 
-    int i_sqrt = 3 * i % 10;
-    int j_sqrt = 5 * j % 9;
-    int16_t sqrt_tw = table[i_sqrt][j_sqrt].first;
-    int16_t sqrt_tw_bar = table[i_sqrt][j_sqrt].second;
-    int16_t inv_sqrt_tw = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].first;
-    int16_t inv_sqrt_tw_bar = table[(10 - i_sqrt) % 10][(9 - j_sqrt) % 9].second;
+    int16x8_t consts = vld1q_s16(&table[i][j][0]);
 
-    int16x8_t consts = {sqrt_tw, sqrt_tw_bar, inv_sqrt_tw, inv_sqrt_tw_bar, sntrup761::q, shared::q_prim, 0, 0};
-
-    a0 = barret::crude_redc<4>(a0, consts);
-    b0 = barret::crude_redc<4>(b0, consts);
-    int16x8_t sqta1 = barret::multiply<0, 1, 4>(a1, consts, consts, consts);
-    int16x8_t sqtb1 = barret::multiply<0, 1, 4>(b1, consts, consts, consts);
+    a0 = barret::crude_redc<6>(a0, consts);
+    b0 = barret::crude_redc<6>(b0, consts);
+    int16x8_t sqta1 = barret::multiply<2, 3, 6>(a1, consts, consts, consts);
+    int16x8_t sqtb1 = barret::multiply<2, 3, 6>(b1, consts, consts, consts);
 
     int16x8_t ha0 = vaddq_s16(a0, sqta1);
     int16x8_t ha1 = vsubq_s16(a0, sqta1);
     int16x8_t hb0 = vaddq_s16(b0, sqtb1);
     int16x8_t hb1 = vsubq_s16(b0, sqtb1);
 
-    int16x8_t sqthb0 = barret::multiply<0, 1, 4>(hb0, consts, consts, consts);
-    int16x8_t sqthb1 = barret::multiply<0, 1, 4>(hb1, consts, consts, consts);
+    int16x8_t sqthb0 = barret::multiply<2, 3, 6>(hb0, consts, consts, consts);
+    int16x8_t sqthb1 = barret::multiply<2, 3, 6>(hb1, consts, consts, consts);
     int16x8_t nsqthb1 = vnegq_s16(sqthb1);
 
     int32x4_t acc00 = {};
@@ -376,8 +361,8 @@ namespace xpower::basemul {
     int16x8_t c1_lhalf = vuzp1q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
-    c0 = montgomery::redc<5, 4>(c0_lhalf, c0_hhalf, consts, consts);
-    c1 = montgomery::redc<5, 4>(c1_lhalf, c1_hhalf, consts, consts);
-    c1 = barret::multiply<2, 3, 4>(c1, consts, consts, consts);
+    c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = barret::multiply<4, 5, 6>(c1, consts, consts, consts);
   }
 }
