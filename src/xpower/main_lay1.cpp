@@ -86,6 +86,18 @@ namespace xpower::main_lay1 {
             h9_4x = vnegq_s16(h9_4x);
           }
         }
+        else {
+          h0_4x = barret::reduce<2, 0>(h0_4x, shared_consts, shared_consts);
+          h1_4x = barret::reduce<2, 0>(h1_4x, shared_consts, shared_consts);
+          h2_4x = barret::reduce<2, 0>(h2_4x, shared_consts, shared_consts);
+          h3_4x = barret::reduce<2, 0>(h3_4x, shared_consts, shared_consts);
+          h4_4x = barret::reduce<2, 0>(h4_4x, shared_consts, shared_consts);
+          h5_4x = barret::reduce<2, 0>(h5_4x, shared_consts, shared_consts);
+          h6_4x = barret::reduce<2, 0>(h6_4x, shared_consts, shared_consts);
+          h7_4x = barret::reduce<2, 0>(h7_4x, shared_consts, shared_consts);
+          h8_4x = barret::reduce<2, 0>(h8_4x, shared_consts, shared_consts);
+          h9_4x = barret::reduce<2, 0>(h9_4x, shared_consts, shared_consts);
+        }
 
         vst1q_s16(&arr[0][k0][j][0], h0_4x);
         vst1q_s16(&arr[1][k0][j][0], h1_4x);
