@@ -24,7 +24,7 @@ namespace xpower::main_lay2 {
   };
 
   const static int16x8_t shared_consts = {
-    sntrup761::q, shared::_2_bar
+    sntrup761::q, shared::_2_bar, 0, 0, 0, 0, 0, 0
   };
 
   inline int16x8_t bar_mul_red(int16x8_t in) {
@@ -136,5 +136,20 @@ namespace xpower::main_lay2 {
 
     h2_2x = vaddq_s16(b2t0o, b2t1o);
     h5_2x = vsubq_s16(b2t0o, b2t1o);
+  }
+
+  inline void intt9_18x(
+      int16x8_t h0, int16x8_t h1, int16x8_t h2, int16x8_t h3, int16x8_t h4,
+      int16x8_t h5, int16x8_t h6, int16x8_t h7, int16x8_t h8,
+      int16x8_t &f0_18x, int16x8_t &f1_18x, int16x8_t &f2_18x, int16x8_t &f3_18x, int16x8_t &f4_18x,
+      int16x8_t &f5_18x, int16x8_t &f6_18x, int16x8_t &f7_18x, int16x8_t &f8_18x) {
+
+    ntt9_2x_h12345678(
+        h0, h8, h7, h6, h5, h4, h3, h2, h1,
+        f0_18x, f1_18x, f2_18x, f3_18x, f4_18x,
+        f5_18x, f6_18x, f7_18x, f8_18x);
+
+    f0_18x = bar_crude_redc(f0_18x);
+    f0_18x = vshlq_n_s16(f0_18x, 1);
   }
 }

@@ -10,7 +10,7 @@ namespace xpower::shared {
   const int16_t q_prim = 15631;
 }
 namespace xpower::basemul {
-  constexpr std::array<std::array<std::array<int16_t, 8>, 9>, 10> table = [] {
+  const std::array<std::array<std::array<int16_t, 8>, 9>, 10> table = [] {
     std::array<std::array<std::array<int16_t, 8>, 9>, 10> res = {};
     int16_t prim_root = 11;
     int16_t w10 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 10);

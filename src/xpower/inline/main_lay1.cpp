@@ -17,6 +17,7 @@ namespace xpower::ntt5 {
 
 namespace xpower::shared {
   const int16_t _4_bar = 29;
+  const int16_t _1_bar = 7;
 }
 
 namespace xpower::main_lay1 {
@@ -26,7 +27,7 @@ namespace xpower::main_lay1 {
   };
 
   const static int16x8_t shared_consts = {
-    sntrup761::q, shared::_4_bar
+    sntrup761::q, shared::_4_bar, shared::_1_bar, 0, 0, 0, 0, 0
   };
 
   inline int16x8_t bar_mul_red(int16x8_t in) {
