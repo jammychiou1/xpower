@@ -106,6 +106,40 @@ namespace xpower::main_lay1 {
     no1_n = bar_use_esti(no1_lhalf_n, no1_esti_n);
   }
 
+  inline void ntt5_4x(
+      int16x8_t f0, int16x8_t f1, int16x8_t f2, int16x8_t f3, int16x8_t f4,
+      int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x) {
+
+    int16x8_t ci0 = vaddq_s16(f1, f4);
+    int16x8_t ci1 = vaddq_s16(f2, f3);
+
+    int16x8_t ct0i = vaddq_s16(ci0, ci1);
+    int16x8_t h0 = vaddq_s16(f0, ct0i);
+    h0_4x = bar_mul_4(h0);
+    int16x8_t f0_4x = vshlq_n_s16(f0, 2);
+
+    int16x8_t ct0o = vsubq_s16(f0_4x, ct0i);
+    ct0o = bar_crude_redc(ct0o);
+
+    int16x8_t ct1i = vsubq_s16(ci0, ci1);
+
+    int16x8_t ct1o = bar_mul_red(ct1i);
+
+    int16x8_t co0 = vaddq_s16(ct0o, ct1o);
+    int16x8_t co1 = vsubq_s16(ct0o, ct1o);
+
+    int16x8_t ni0 = vsubq_s16(f1, f4);
+    int16x8_t ni1 = vsubq_s16(f2, f3);
+
+    int16x8_t no0_n, no1_n;
+    nega_part(ni0, ni1, no0_n, no1_n);
+
+    h1_4x = vsubq_s16(co0, no0_n);
+    h3_4x = vsubq_s16(co1, no1_n);
+    h4_4x = vaddq_s16(co0, no0_n);
+    h2_4x = vaddq_s16(co1, no1_n);
+  }
+
   inline void ntt5_4x_nof14(
       int16x8_t f0, int16x8_t f2, int16x8_t f3,
       int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x) {
@@ -214,6 +248,26 @@ namespace xpower::main_lay1 {
     h2_4x = vsubq_s16(co1, no1);
   }
 
+  inline void ntt10_4x(
+      int16x8_t f0, int16x8_t f1, int16x8_t f2, int16x8_t f3, int16x8_t f4,
+      int16x8_t f5, int16x8_t f6, int16x8_t f7, int16x8_t f8, int16x8_t f9,
+      int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x,
+      int16x8_t &h5_4x, int16x8_t &h6_4x, int16x8_t &h7_4x, int16x8_t &h8_4x, int16x8_t &h9_4x) {
+
+    int16x8_t f00 = vaddq_s16(f0, f5);
+    int16x8_t f10 = vaddq_s16(f6, f1);
+    int16x8_t f20 = vaddq_s16(f2, f7);
+    int16x8_t f30 = vaddq_s16(f8, f3);
+    int16x8_t f40 = vaddq_s16(f4, f9);
+    ntt5_4x(f00, f10, f20, f30, f40, h0_4x, h2_4x, h4_4x, h6_4x, h8_4x);
+    int16x8_t f01 = vsubq_s16(f0, f5);
+    int16x8_t f11 = vsubq_s16(f6, f1);
+    int16x8_t f21 = vsubq_s16(f2, f7);
+    int16x8_t f31 = vsubq_s16(f8, f3);
+    int16x8_t f41 = vsubq_s16(f4, f9);
+    ntt5_4x(f01, f11, f21, f31, f41, h5_4x, h7_4x, h9_4x, h1_4x, h3_4x);
+  }
+
   inline void ntt10_4x_nof3546(
       int16x8_t f0, int16x8_t f1, int16x8_t f2, int16x8_t f7, int16x8_t f8, int16x8_t f9,
       int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x,
@@ -254,5 +308,16 @@ namespace xpower::main_lay1 {
     h1_4x = vsubq_s16(h30_4x, h31_4x);
     h8_4x = vaddq_s16(h40_4x, h41_4x);
     h3_4x = vsubq_s16(h40_4x, h41_4x);
+  }
+
+  inline void intt10_40x(
+      int16x8_t h0, int16x8_t h1, int16x8_t h2, int16x8_t h3, int16x8_t h4,
+      int16x8_t h5, int16x8_t h6, int16x8_t h7, int16x8_t h8, int16x8_t h9,
+      int16x8_t &f0_40x, int16x8_t &f1_40x, int16x8_t &f2_40x, int16x8_t &f3_40x, int16x8_t &f4_40x,
+      int16x8_t &f5_40x, int16x8_t &f6_40x, int16x8_t &f7_40x, int16x8_t &f8_40x, int16x8_t &f9_40x) {
+
+    ntt10_4x(h0, h9, h8, h7, h6, h5, h4, h3, h2, h1,
+        f0_40x, f1_40x, f2_40x, f3_40x, f4_40x,
+        f5_40x, f6_40x, f7_40x, f8_40x, f9_40x);
   }
 }

@@ -112,4 +112,38 @@ namespace xpower::main_lay1 {
       }
     }
   }
+
+  void bwd_insert(int16_t arr[10][2][9][8], int16_t main_poly[1440]) {
+    for (int j = 0; j < 9; j++) {
+      for (int k0 = 0; k0 < 2; k0++) {
+        int16x8_t f0_40x, f1_40x, f2_40x, f3_40x, f4_40x, f5_40x, f6_40x, f7_40x, f8_40x, f9_40x;
+
+        int16x8_t h0 = vld1q_s16(&arr[0][k0][j][0]);
+        int16x8_t h1 = vld1q_s16(&arr[1][k0][j][0]);
+        int16x8_t h2 = vld1q_s16(&arr[2][k0][j][0]);
+        int16x8_t h3 = vld1q_s16(&arr[3][k0][j][0]);
+        int16x8_t h4 = vld1q_s16(&arr[4][k0][j][0]);
+        int16x8_t h5 = vld1q_s16(&arr[5][k0][j][0]);
+        int16x8_t h6 = vld1q_s16(&arr[6][k0][j][0]);
+        int16x8_t h7 = vld1q_s16(&arr[7][k0][j][0]);
+        int16x8_t h8 = vld1q_s16(&arr[8][k0][j][0]);
+        int16x8_t h9 = vld1q_s16(&arr[9][k0][j][0]);
+
+        intt10_40x(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9
+            f0_40x, f1_40x, f2_40x, f3_40x, f4_40x,
+            f5_40x, f6_40x, f7_40x, f8_40x, f9_40x);
+
+        vst1q_s16(&main_poly[poly_base(0, j) + 8 * k0], f0_40x);
+        vst1q_s16(&main_poly[poly_base(1, j) + 8 * k0], f1_40x);
+        vst1q_s16(&main_poly[poly_base(2, j) + 8 * k0], f2_40x);
+        vst1q_s16(&main_poly[poly_base(3, j) + 8 * k0], f3_40x);
+        vst1q_s16(&main_poly[poly_base(4, j) + 8 * k0], f4_40x);
+        vst1q_s16(&main_poly[poly_base(5, j) + 8 * k0], f5_40x);
+        vst1q_s16(&main_poly[poly_base(6, j) + 8 * k0], f6_40x);
+        vst1q_s16(&main_poly[poly_base(7, j) + 8 * k0], f7_40x);
+        vst1q_s16(&main_poly[poly_base(8, j) + 8 * k0], f8_40x);
+        vst1q_s16(&main_poly[poly_base(9, j) + 8 * k0], f9_40x);
+      }
+    }
+  }
 }

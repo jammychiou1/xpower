@@ -94,8 +94,7 @@ void fwd_inplace_ref(int16_t out_arr[10][2][9][8], int16_t in_arr[10][2][9][8]) 
 
         std::array<int16_t, 9> hjs = ntt_ref<9>(fjs);
 
-        out_arr[i][k0][0][k] = hjs[0];
-        for (int j = 1; j < 9; j++) {
+        for (int j = 0; j < 9; j++) {
           out_arr[i][k0][j][k] = sntrup761::utils::center_lift(int64_t(2) * hjs[j]);
         }
       }

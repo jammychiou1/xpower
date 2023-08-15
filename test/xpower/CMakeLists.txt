@@ -1,4 +1,4 @@
-set(TESTS ntt10_4x_nof3456 ntt10_4x_nof34567 ntt9_2x_h12345678 schoolbook karatsuba radix2 karatsuba_kara radix2_kara main_lay1_fwd_extract main_lay2_fwd_inplace)
+set(TESTS ntt10_4x ntt10_4x_nof3456 ntt10_4x_nof34567 ntt9_2x_h12345678 schoolbook karatsuba radix2 karatsuba_kara radix2_kara main_lay1_fwd_extract main_lay2_fwd_inplace)
 
 foreach(X IN LISTS TESTS)
   add_executable("${X}_test" "${X}.cpp")

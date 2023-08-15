@@ -28,6 +28,16 @@ std::array<int16_t, SZ> ntt_ref(std::array<int16_t, SZ> fs) {
 }
 
 template <int SZ>
+std::array<int16_t, SZ> intt_ref(std::array<int16_t, SZ> hs) {
+  std::array<int16_t, SZ> hs_perm = {};
+  int64_t sz_inv = sntrup761::utils::gen_pow(SZ, sntrup761::q - 2);
+  for (int i = 0; i < SZ; i++) {
+    hs_perm[i] = sntrup761::utils::center_lift(sz_inv * hs[(SZ - i) % SZ]);
+  }
+  return ntt_ref<SZ>(hs_perm);
+}
+
+template <int SZ>
 std::array<int16_t, SZ> weighted_conv_ref(std::array<int16_t, SZ> a, std::array<int16_t, SZ> b, int16_t weight) {
   std::array<int16_t, SZ> c = {};
 

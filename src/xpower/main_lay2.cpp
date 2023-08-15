@@ -17,14 +17,14 @@ namespace xpower::main_lay2 {
         int16x8_t f7 = vld1q_s16(&arr[i][k0][7][0]);
         int16x8_t f8 = vld1q_s16(&arr[i][k0][8][0]);
 
-        int16x8_t h0, h1_2x, h2_2x, h3_2x, h4_2x, h5_2x, h6_2x, h7_2x, h8_2x, h9_2x;
-        ntt9_2x_h12345678(
+        int16x8_t h0_2x, h1_2x, h2_2x, h3_2x, h4_2x, h5_2x, h6_2x, h7_2x, h8_2x, h9_2x;
+        ntt9_2x(
             f0, f1, f2, f3, f4,
             f5, f6, f7, f8,
-            h0, h1_2x, h2_2x, h3_2x, h4_2x,
+            h0_2x, h1_2x, h2_2x, h3_2x, h4_2x,
             h5_2x, h6_2x, h7_2x, h8_2x);
 
-        vst1q_s16(&arr[i][k0][0][0], h0);
+        vst1q_s16(&arr[i][k0][0][0], h0_2x);
         vst1q_s16(&arr[i][k0][1][0], h1_2x);
         vst1q_s16(&arr[i][k0][2][0], h2_2x);
         vst1q_s16(&arr[i][k0][3][0], h3_2x);
