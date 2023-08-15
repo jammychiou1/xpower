@@ -1,4 +1,4 @@
-set(BENCH schoolbook karatsuba karatsuba_kara radix2)
+set(BENCH schoolbook karatsuba karatsuba_kara radix2 main_forward)
 
 foreach(X IN LISTS BENCH)
   add_executable("${X}_bench" "${X}.cpp")
