@@ -44,9 +44,9 @@ std::array<int16_t, SZ> weighted_conv_ref(std::array<int16_t, SZ> a, std::array<
   for (int k = 0; k < SZ; k++) {
     int64_t ck = 0;
     for (int dk = 0; dk < SZ; dk++) {
-      int k_a = (k + dk) % 16;
-      int k_b = (16 - dk) % 16;
-      if (k_a + k_b < 16) {
+      int k_a = (k + dk) % SZ;
+      int k_b = (SZ - dk) % SZ;
+      if (k_a + k_b < SZ) {
         ck += int64_t(a[k_a]) * b[k_b];
       }
       else {

@@ -1,3 +1,5 @@
+#include "main_lay1.h"
+
 #include <cstdint>
 #include <arm_neon.h>
 #include <array>
@@ -31,7 +33,7 @@ namespace xpower::main_lay1 {
     return (81 * i + 10 * j) % 90 * 16;
   }
 
-  void fwd_extract(int16_t arr[10][2][9][8], int16_t main_poly[768]) {
+  void fwd_extract(int16_t arr[10][2][9][8], const int16_t main_poly[768]) {
     for (int j = 0; j < 9; j++) {
       for (int k0 = 0; k0 < 2; k0++) {
         int16x8_t h0_4x, h1_4x, h2_4x, h3_4x, h4_4x, h5_4x, h6_4x, h7_4x, h8_4x, h9_4x;
@@ -129,7 +131,18 @@ namespace xpower::main_lay1 {
         int16x8_t h8 = vld1q_s16(&arr[8][k0][j][0]);
         int16x8_t h9 = vld1q_s16(&arr[9][k0][j][0]);
 
-        intt10_40x(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9
+        h0 = barret::reduce<2, 0>(h0, shared_consts, shared_consts);
+        h1 = barret::reduce<2, 0>(h1, shared_consts, shared_consts);
+        h2 = barret::reduce<2, 0>(h2, shared_consts, shared_consts);
+        h3 = barret::reduce<2, 0>(h3, shared_consts, shared_consts);
+        h4 = barret::reduce<2, 0>(h4, shared_consts, shared_consts);
+        h5 = barret::reduce<2, 0>(h5, shared_consts, shared_consts);
+        h6 = barret::reduce<2, 0>(h6, shared_consts, shared_consts);
+        h7 = barret::reduce<2, 0>(h7, shared_consts, shared_consts);
+        h8 = barret::reduce<2, 0>(h8, shared_consts, shared_consts);
+        h9 = barret::reduce<2, 0>(h9, shared_consts, shared_consts);
+
+        intt10_40x(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9,
             f0_40x, f1_40x, f2_40x, f3_40x, f4_40x,
             f5_40x, f6_40x, f7_40x, f8_40x, f9_40x);
 

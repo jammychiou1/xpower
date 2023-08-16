@@ -203,7 +203,11 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c0 = vshlq_n_s16(c0, 1);
+    c0 = barret::crude_redc<6>(c0, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = vshlq_n_s16(c1, 1);
+    c1 = barret::crude_redc<6>(c1, consts);
   }
 
   inline void karatsuba(
@@ -237,7 +241,11 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c0 = vshlq_n_s16(c0, 1);
+    c0 = barret::crude_redc<6>(c0, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = vshlq_n_s16(c1, 1);
+    c1 = barret::crude_redc<6>(c1, consts);
   }
 
   // i need to be even
@@ -282,6 +290,7 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c0 = barret::crude_redc<6>(c0, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
     c1 = barret::multiply<4, 5, 6>(c1, consts, consts, consts);
   }
@@ -317,7 +326,11 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c0 = vshlq_n_s16(c0, 1);
+    c0 = barret::crude_redc<6>(c0, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
+    c1 = vshlq_n_s16(c1, 1);
+    c1 = barret::crude_redc<6>(c1, consts);
   }
 
   // i need to be even
@@ -362,6 +375,7 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
+    c0 = barret::crude_redc<6>(c0, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
     c1 = barret::multiply<4, 5, 6>(c1, consts, consts, consts);
   }
