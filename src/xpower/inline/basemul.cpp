@@ -41,17 +41,17 @@ namespace xpower::basemul {
         res[i][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, 3 * i));
         res[i][1] = sntrup761::utils::gen_bar(res[i][0]);
 
-        res[i][2] = sntrup761::utils::center_lift(inv_2 * sntrup761::utils::gen_pow(w10, i));
+        res[i][2] = sntrup761::utils::center_lift(int64_t(144) * inv_2 * sntrup761::utils::gen_pow(w10, i));
         res[i][3] = sntrup761::utils::gen_bar(res[i][2]);
 
-        res[i][4] = sntrup761::utils::center_lift(inv_2 * sntrup761::utils::gen_pow(w10, 8 * i));
+        res[i][4] = sntrup761::utils::center_lift(int64_t(144) * inv_2 * sntrup761::utils::gen_pow(w10, 8 * i));
         res[i][5] = sntrup761::utils::gen_bar(res[i][4]);
       }
       else {
         res[i][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i));
         res[i][1] = sntrup761::utils::gen_bar(res[i][0]);
 
-        res[i][2] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i));
+        res[i][2] = sntrup761::utils::center_lift(int64_t(144) * sntrup761::utils::gen_pow(w10, i));
         res[i][3] = sntrup761::utils::gen_bar(res[i][2]);
       }
 

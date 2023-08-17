@@ -66,7 +66,7 @@ output lowmul_ref(input in) {
     }
   }
   for (int i = 0; i < 81; i++) {
-    out[i] = sntrup761::utils::center_lift(1623 * out[i]);
+    out[i] = sntrup761::utils::center_lift(-429 * out[i]);
   }
   return output{out};
 }
