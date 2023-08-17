@@ -5,6 +5,7 @@
 #include "low_lay1.cpp"
 #include "basemul.h"
 #include "interface/sntrup761.h"
+#include "consts.h"
 
 namespace xpower::lowmul {
   void lowmul(const int16_t in1_low[81], const int16_t in2_low[81], int16_t out_low[96]) {
@@ -19,6 +20,6 @@ namespace xpower::lowmul {
 
     int64_t tmp = out_low[80] + 1623 * (int64_t(in1_low[0]) * in2_low[80] + int64_t(in1_low[80]) * in2_low[0]);
     int64_t esti = (tmp * 935519 + (int64_t(1) << 31)) >> 32;
-    out_low[80] = tmp - esti * sntrup761::q;
+    out_low[80] = tmp - esti * shared::q;
   }
 }

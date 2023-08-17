@@ -7,12 +7,12 @@
 #include "inline/main_lay1.cpp"
 #include "zq_neon.h"
 #include "utils/gen_consts.h"
+#include "consts.h"
 
 namespace xpower::main_lay1 {
   const std::array<std::array<int16_t, 8>, 9> table = [] {
     std::array<std::array<int16_t, 8>, 9> res = {};
-    int16_t prim_root = 11;
-    int16_t w10 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 10);
+    int16_t w10 = shared::w10;
     for (int j = 0; j < 9; j++) {
       res[j][0] = sntrup761::utils::gen_pow(w10, j + 8);
       res[j][1] = sntrup761::utils::gen_bar(res[j][0]);

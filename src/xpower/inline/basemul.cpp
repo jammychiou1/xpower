@@ -10,9 +10,8 @@
 namespace xpower::basemul {
   const std::array<std::array<std::array<int16_t, 8>, 9>, 10> table = [] {
     std::array<std::array<std::array<int16_t, 8>, 9>, 10> res = {};
-    int16_t prim_root = 11;
-    int16_t w10 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 10);
-    int16_t w9 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 9);
+    int16_t w10 = shared::w10;
+    int16_t w9 = shared::w9;
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 9; j++) {
         if (i % 2 == 0) {
@@ -26,7 +25,7 @@ namespace xpower::basemul {
           res[i][j][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i) * sntrup761::utils::gen_pow(w9, j));
           res[i][j][1] = sntrup761::utils::gen_bar(res[i][j][0]);
         }
-        res[i][j][6] = sntrup761::q;
+        res[i][j][6] = shared::q;
         res[i][j][7] = shared::q_prim;
       }
     }
@@ -35,18 +34,17 @@ namespace xpower::basemul {
 
   const std::array<std::array<int16_t, 8>, 10> twist_table = [] {
     std::array<std::array<int16_t, 8>, 10> res = {};
-    int16_t prim_root = 11;
-    int16_t w10 = sntrup761::utils::gen_pow(prim_root, (sntrup761::q - 1) / 10);
-    int64_t inv2 = -2295;
+    int16_t w10 = shared::w10;
+    int64_t inv_2 = shared::inv_2;
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
         res[i][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, 3 * i));
         res[i][1] = sntrup761::utils::gen_bar(res[i][0]);
 
-        res[i][2] = sntrup761::utils::center_lift(inv2 * sntrup761::utils::gen_pow(w10, i));
+        res[i][2] = sntrup761::utils::center_lift(inv_2 * sntrup761::utils::gen_pow(w10, i));
         res[i][3] = sntrup761::utils::gen_bar(res[i][2]);
 
-        res[i][4] = sntrup761::utils::center_lift(inv2 * sntrup761::utils::gen_pow(w10, 8 * i));
+        res[i][4] = sntrup761::utils::center_lift(inv_2 * sntrup761::utils::gen_pow(w10, 8 * i));
         res[i][5] = sntrup761::utils::gen_bar(res[i][4]);
       }
       else {
@@ -57,7 +55,7 @@ namespace xpower::basemul {
         res[i][3] = sntrup761::utils::gen_bar(res[i][2]);
       }
 
-      res[i][6] = sntrup761::q;
+      res[i][6] = shared::q;
       res[i][7] = shared::q_prim;
     }
     return res;

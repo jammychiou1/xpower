@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "interface/sntrup761.h"
+#include "utils/gen_consts.h"
 
 namespace xpower::shared {
   const int16_t q = sntrup761::q;
@@ -11,6 +12,10 @@ namespace xpower::shared {
   const int16_t _1_bar = 7;
   const int16_t _2_bar = 14;
   const int16_t _4_bar = 29;
+  const int16_t prim_root = 11;
+  const int16_t w10 = sntrup761::utils::gen_pow(prim_root, (q - 1) / 10);
+  const int16_t w9 = sntrup761::utils::gen_pow(prim_root, (q - 1) / 9);
+  const int16_t inv_2 = -2295;
 }
 
 namespace xpower::ntt5 {

@@ -12,7 +12,7 @@ namespace xpower::main_lay2 {
   };
 
   const static int16x8_t shared_consts = {
-    sntrup761::q, shared::_2_bar, 0, 0, 0, 0, 0, 0
+    shared::q, shared::_2_bar, 0, 0, 0, 0, 0, 0
   };
 
   inline int16x8_t bar_mul_red(int16x8_t in) {
