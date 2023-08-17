@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <arm_neon.h>
 #include <array>
 #include <utility>
 #include <cassert>

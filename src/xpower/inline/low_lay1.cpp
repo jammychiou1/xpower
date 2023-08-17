@@ -3,12 +3,17 @@
 
 #include "interface/sntrup761.h"
 #include "zq_neon.h"
-#include "inline/main_lay1.cpp"
+#include "consts.h"
 
 namespace xpower::low_lay1 {
-  const static int16x8_t ntt5_consts = main_lay1::ntt5_consts;
+  const static int16x8_t ntt5_consts = {
+    ntt5::red, ntt5::green, ntt5::blue, ntt5::yellow,
+    ntt5::red_bar, ntt5::green_bar, ntt5::blue_bar, ntt5::yellow_bar
+  };
 
-  const static int16x8_t shared_consts = main_lay1::shared_consts;
+  const static int16x8_t shared_consts = {
+    sntrup761::q, shared::_4_bar, shared::_1_bar, 0, 0, 0, 0, 0
+  };
 
   inline int16x8_t bar_mul_red(int16x8_t in) {
     return barret::multiply<0, 4, 0>(in, ntt5_consts, ntt5_consts, shared_consts);

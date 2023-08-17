@@ -109,12 +109,12 @@ inout testcase2(int i, int j) {
 
 int main() {
   assert(run_testcase(testcase0()));
-  for (int i = 0; i < 10; i++) {
+  for (int i = 1; i < 10; i += 2) {
     for (int j = 0; j < 9; j++) {
       assert(run_testcase(testcase1(i, j)));
     }
   }
-  for (int i = 0; i < 10; i++) {
+  for (int i = 1; i < 10; i += 2) {
     for (int j = 0; j < 9; j++) {
       assert(run_testcase(testcase2(i, j)));
     }

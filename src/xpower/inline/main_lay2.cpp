@@ -2,20 +2,8 @@
 #include <arm_neon.h>
 
 #include "interface/sntrup761.h"
+#include "consts.h"
 #include "zq_neon.h"
-
-namespace xpower::ntt9 {
-  const int16_t red = -621;
-  const int16_t blue = -803;
-  const int16_t green = 1891;
-  const int16_t red_bar = -4432;
-  const int16_t blue_bar = -5731;
-  const int16_t green_bar = 13497;
-}
-
-namespace xpower::shared {
-  const int16_t _2_bar = 14;
-}
 
 namespace xpower::main_lay2 {
   const static int16x8_t ntt9_consts = {

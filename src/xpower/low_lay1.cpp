@@ -37,41 +37,30 @@ namespace xpower::low_lay1 {
     }
   }
 
-  void bwd_insert(int16_t arr[10][2][8], int16_t low_poly[1440]) {
+  void bwd_insert(int16_t arr[10][2][8], int16_t low_poly[96]) {
     for (int k0 = 0; k0 < 2; k0++) {
       int16x8_t f0_40x, f1_40x, f2_40x, f3_40x, f4_40x, f5_40x, f6_40x, f7_40x, f8_40x, f9_40x;
 
-      int16x8_t h0 = vld1q_s16(&arr[0][k0][j][0]);
-      int16x8_t h1 = vld1q_s16(&arr[1][k0][j][0]);
-      int16x8_t h2 = vld1q_s16(&arr[2][k0][j][0]);
-      int16x8_t h3 = vld1q_s16(&arr[3][k0][j][0]);
-      int16x8_t h4 = vld1q_s16(&arr[4][k0][j][0]);
-      int16x8_t h5 = vld1q_s16(&arr[5][k0][j][0]);
-      int16x8_t h6 = vld1q_s16(&arr[6][k0][j][0]);
-      int16x8_t h7 = vld1q_s16(&arr[7][k0][j][0]);
-      int16x8_t h8 = vld1q_s16(&arr[8][k0][j][0]);
-      int16x8_t h9 = vld1q_s16(&arr[9][k0][j][0]);
-
-      h0 = barret::reduce<2, 0>(h0, shared_consts, shared_consts);
-      h1 = barret::reduce<2, 0>(h1, shared_consts, shared_consts);
-      h2 = barret::reduce<2, 0>(h2, shared_consts, shared_consts);
-      h3 = barret::reduce<2, 0>(h3, shared_consts, shared_consts);
-      h4 = barret::reduce<2, 0>(h4, shared_consts, shared_consts);
-      h5 = barret::reduce<2, 0>(h5, shared_consts, shared_consts);
-      h6 = barret::reduce<2, 0>(h6, shared_consts, shared_consts);
-      h7 = barret::reduce<2, 0>(h7, shared_consts, shared_consts);
-      h8 = barret::reduce<2, 0>(h8, shared_consts, shared_consts);
-      h9 = barret::reduce<2, 0>(h9, shared_consts, shared_consts);
+      int16x8_t h0 = vld1q_s16(&arr[0][k0][0]);
+      int16x8_t h1 = vld1q_s16(&arr[1][k0][0]);
+      int16x8_t h2 = vld1q_s16(&arr[2][k0][0]);
+      int16x8_t h3 = vld1q_s16(&arr[3][k0][0]);
+      int16x8_t h4 = vld1q_s16(&arr[4][k0][0]);
+      int16x8_t h5 = vld1q_s16(&arr[5][k0][0]);
+      int16x8_t h6 = vld1q_s16(&arr[6][k0][0]);
+      int16x8_t h7 = vld1q_s16(&arr[7][k0][0]);
+      int16x8_t h8 = vld1q_s16(&arr[8][k0][0]);
+      int16x8_t h9 = vld1q_s16(&arr[9][k0][0]);
 
       intt10_40x_nof3456(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9,
           f0_40x, f1_40x, f2_40x, f7_40x, f8_40x, f9_40x);
 
-      vst1q_s16(&low_poly[8 * k0], f0_40x);
-      vst1q_s16(&low_poly[16 + 8 * k0], f1_40x);
-      vst1q_s16(&low_poly[32 + 8 * k0], f2_40x);
-      vst1q_s16(&low_poly[48 + 8 * k0], f7_40x);
-      vst1q_s16(&low_poly[64 + 8 * k0], f8_40x);
-      vst1q_s16(&low_poly[80 + 8 * k0], f9_40x);
+      vst1q_s16(&low_poly[8 * k0], f7_40x);
+      vst1q_s16(&low_poly[16 + 8 * k0], f8_40x);
+      vst1q_s16(&low_poly[32 + 8 * k0], f9_40x);
+      vst1q_s16(&low_poly[48 + 8 * k0], f0_40x);
+      vst1q_s16(&low_poly[64 + 8 * k0], f1_40x);
+      vst1q_s16(&low_poly[80 + 8 * k0], f2_40x);
     }
   }
 }
