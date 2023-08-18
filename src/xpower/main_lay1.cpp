@@ -10,8 +10,8 @@
 #include "consts.h"
 
 namespace xpower::main_lay1 {
-  const std::array<std::array<int16_t, 8>, 9> table = [] {
-    std::array<std::array<int16_t, 8>, 9> res = {};
+  const std::array<std::array<int16_t, 16>, 9> table = [] {
+    std::array<std::array<int16_t, 16>, 9> res = {};
     int16_t w10 = shared::w10;
     for (int j = 0; j < 9; j++) {
       res[j][0] = sntrup761::utils::gen_pow(w10, j + 8);
@@ -25,6 +25,19 @@ namespace xpower::main_lay1 {
 
       res[j][6] = sntrup761::utils::gen_pow(w10, 4 * (j + 8));
       res[j][7] = sntrup761::utils::gen_bar(res[j][6]);
+
+
+      res[j][8] = sntrup761::utils::gen_pow(w10, 6 * (j + 8));
+      res[j][9] = sntrup761::utils::gen_bar(res[j][8]);
+
+      res[j][10] = sntrup761::utils::gen_pow(w10, 7 * (j + 8));
+      res[j][11] = sntrup761::utils::gen_bar(res[j][10]);
+
+      res[j][12] = sntrup761::utils::gen_pow(w10, 8 * (j + 8));
+      res[j][13] = sntrup761::utils::gen_bar(res[j][12]);
+
+      res[j][14] = sntrup761::utils::gen_pow(w10, 9 * (j + 8));
+      res[j][15] = sntrup761::utils::gen_bar(res[j][14]);
     }
     return res;
   } ();
@@ -65,27 +78,23 @@ namespace xpower::main_lay1 {
         }
 
         if (j != 2) {
-          int16x8_t twist_consts = vld1q_s16(&table[j][0]);
+          int16x8x2_t twist_consts = vld1q_s16_x2(&table[j][0]);
 
           h0_4x = barret::reduce<2, 0>(h0_4x, shared_consts, shared_consts);
           h5_4x = barret::reduce<2, 0>(h5_4x, shared_consts, shared_consts);
 
-          h1_4x = barret::multiply<0, 1, 0>(h1_4x, twist_consts, twist_consts, shared_consts);
-          h2_4x = barret::multiply<2, 3, 0>(h2_4x, twist_consts, twist_consts, shared_consts);
-          h3_4x = barret::multiply<4, 5, 0>(h3_4x, twist_consts, twist_consts, shared_consts);
-          h4_4x = barret::multiply<6, 7, 0>(h4_4x, twist_consts, twist_consts, shared_consts);
+          h1_4x = barret::multiply<0, 1, 0>(h1_4x, twist_consts.val[0], twist_consts.val[0], shared_consts);
+          h2_4x = barret::multiply<2, 3, 0>(h2_4x, twist_consts.val[0], twist_consts.val[0], shared_consts);
+          h3_4x = barret::multiply<4, 5, 0>(h3_4x, twist_consts.val[0], twist_consts.val[0], shared_consts);
+          h4_4x = barret::multiply<6, 7, 0>(h4_4x, twist_consts.val[0], twist_consts.val[0], shared_consts);
 
-          h6_4x = barret::multiply<0, 1, 0>(h6_4x, twist_consts, twist_consts, shared_consts);
-          h7_4x = barret::multiply<2, 3, 0>(h7_4x, twist_consts, twist_consts, shared_consts);
-          h8_4x = barret::multiply<4, 5, 0>(h8_4x, twist_consts, twist_consts, shared_consts);
-          h9_4x = barret::multiply<6, 7, 0>(h9_4x, twist_consts, twist_consts, shared_consts);
+          h6_4x = barret::multiply<0, 1, 0>(h6_4x, twist_consts.val[1], twist_consts.val[1], shared_consts);
+          h7_4x = barret::multiply<2, 3, 0>(h7_4x, twist_consts.val[1], twist_consts.val[1], shared_consts);
+          h8_4x = barret::multiply<4, 5, 0>(h8_4x, twist_consts.val[1], twist_consts.val[1], shared_consts);
+          h9_4x = barret::multiply<6, 7, 0>(h9_4x, twist_consts.val[1], twist_consts.val[1], shared_consts);
 
           if (j % 2 == 1) {
             h5_4x = vnegq_s16(h5_4x);
-            h6_4x = vnegq_s16(h6_4x);
-            h7_4x = vnegq_s16(h7_4x);
-            h8_4x = vnegq_s16(h8_4x);
-            h9_4x = vnegq_s16(h9_4x);
           }
         }
         else {
