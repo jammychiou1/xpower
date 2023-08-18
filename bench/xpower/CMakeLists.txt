@@ -1,4 +1,4 @@
-set(BENCH karatsuba_radix2 main_forward)
+set(BENCH karatsuba_radix2 main_forward rqmul)
 
 foreach(X IN LISTS BENCH)
   add_executable("${X}_bench" "${X}.cpp")
