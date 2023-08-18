@@ -24,6 +24,8 @@ namespace xpower::basemul {
         else {
           res[i][j][0] = sntrup761::utils::center_lift(sntrup761::utils::gen_pow(w10, i) * sntrup761::utils::gen_pow(w9, j));
           res[i][j][1] = sntrup761::utils::gen_bar(res[i][j][0]);
+
+          res[i][j][2] = shared::_2_bar;
         }
         res[i][j][6] = shared::q;
         res[i][j][7] = shared::q_prim;
@@ -130,11 +132,9 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
-    c0 = vshlq_n_s16(c0, 1);
-    c0 = barret::crude_redc<6>(c0, consts);
+    c0 = barret::shift_left<1, 2, 6>(c0, consts, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
-    c1 = vshlq_n_s16(c1, 1);
-    c1 = barret::crude_redc<6>(c1, consts);
+    c1 = barret::shift_left<1, 2, 6>(c1, consts, consts);
   }
 
   // |i| needs to be even
