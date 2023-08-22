@@ -18,7 +18,7 @@ namespace xpower::lowmul {
     basemul::low_basemul(in1_arr, in2_arr, out_arr);
     low_lay1::bwd_insert(out_arr, out_low);
 
-    int64_t tmp = out_low[80] - 429 * (int64_t(in1_low[0]) * in2_low[80] + int64_t(in1_low[80]) * in2_low[0]);
+    int64_t tmp = out_low[80] + 2081 * (int64_t(in1_low[0]) * in2_low[80] + int64_t(in1_low[80]) * in2_low[0]);
     int64_t esti = (tmp * 935519 + (int64_t(1) << 31)) >> 32;
     out_low[80] = tmp - esti * shared::q;
   }

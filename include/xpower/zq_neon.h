@@ -12,6 +12,12 @@ namespace xpower::barret {
     return vqrdmulhq_laneq_s16_asm<BAR_LANE>(in, bar);
   }
 
+  template <int SHIFT, int BAR_LANE>
+  inline int16x8_t gen_esti_precise(int16x8_t in, int16x8_t bar) {
+    int16x8_t esti = vqdmulhq_laneq_s16_asm<BAR_LANE>(in, bar);
+    return vrshrq_n_s16(esti, SHIFT);
+  }
+
   template <int MOD_LANE>
   inline int16x8_t use_esti(int16x8_t lhalf, int16x8_t esti, int16x8_t mod) {
     return vmlsq_laneq_s16_asm<MOD_LANE>(lhalf, esti, mod);
@@ -46,6 +52,12 @@ namespace xpower::barret {
   template <int MOD_LANE>
   inline int16x8_t crude_redc(int16x8_t in, int16x8_t mod) {
     int16x8_t esti = gen_esti_crude_redc(in);
+    return use_esti<MOD_LANE>(in, esti, mod);
+  }
+
+  template <int SHIFT, int _1_BAR_LANE, int MOD_LANE>
+  inline int16x8_t precise_redc(int16x8_t in, int16x8_t _1_bar, int16x8_t mod) {
+    int16x8_t esti = gen_esti<SHIFT, _1_BAR_LANE>(in, _1_bar);
     return use_esti<MOD_LANE>(in, esti, mod);
   }
 }

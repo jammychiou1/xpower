@@ -14,16 +14,16 @@ namespace xpower::basemul {
         int16x8_t b0 = vld1q_s16(&in2_arr[i][0][j][0]);
         int16x8_t b1 = vld1q_s16(&in2_arr[i][1][j][0]);
 
-        int16x8_t c0_n2190x, c1_n2190x;
+        int16x8_t c0_n1095x, c1_n1095x;
         if (i % 2 == 0) {
-          radix2(a0, a1, b0, b1, i, j, c0_n2190x, c1_n2190x);
+          radix2(a0, a1, b0, b1, i, j, c0_n1095x, c1_n1095x);
         }
         else {
-          karatsuba(a0, a1, b0, b1, i, j, c0_n2190x, c1_n2190x);
+          karatsuba(a0, a1, b0, b1, i, j, c0_n1095x, c1_n1095x);
         }
 
-        vst1q_s16(&out_arr[i][0][j][0], c0_n2190x);
-        vst1q_s16(&out_arr[i][1][j][0], c1_n2190x);
+        vst1q_s16(&out_arr[i][0][j][0], c0_n1095x);
+        vst1q_s16(&out_arr[i][1][j][0], c1_n1095x);
       }
     }
   }

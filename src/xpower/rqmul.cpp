@@ -52,13 +52,13 @@ namespace xpower::rqmul {
     out_poly[80] += out_low[80];
   }
 
-  const int16_t inv_n429 = 1327;
-  const int16_t inv_n429_bar = sntrup761::utils::gen_bar(1327);
+  const int16_t inv_2081 = -1937;
+  const int16_t inv_2081_bar = sntrup761::utils::gen_bar(inv_2081);
   void scale_freeze(int16_t out_poly[768]) {
     int16x8_t qs = vdupq_n_s16(shared::q);
     int16x8_t half_qs = vdupq_n_s16((shared::q - 1) / 2);
     int16x8_t neg_half_qs = vdupq_n_s16(-(shared::q - 1) / 2);
-    int16x8_t consts = {inv_n429, inv_n429_bar, 0, 0, 0, 0, 0, 0};
+    int16x8_t consts = {inv_2081, inv_2081_bar, 0, 0, 0, 0, 0, 0};
 
     for (int i = 0; i < 768; i += 8 * 4) {
       int16x8x4_t chunks = vld1q_s16_x4(&out_poly[i]);
