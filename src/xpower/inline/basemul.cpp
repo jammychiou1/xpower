@@ -181,7 +181,9 @@ namespace xpower::basemul {
     int16x8_t c1_hhalf = vuzp2q_s16(vreinterpretq_s16_s32(acc2), vreinterpretq_s16_s32(acc3));
 
     c0 = montgomery::redc<7, 6>(c0_lhalf, c0_hhalf, consts, consts);
-    c0 = barret::multiply<4, 5, 6>(c0, consts, consts, consts);
+    int16x8_t q_if_odd = lhalf::multiply<6>(vandq_s16(c0, vdupq_n_s16(1)), consts);
+    c0 = vshrq_n_s16(vaddq_s16(c0, q_if_odd), 1);
+    // c0 = barret::multiply<4, 5, 6>(c0, consts, consts, consts);
     c1 = montgomery::redc<7, 6>(c1_lhalf, c1_hhalf, consts, consts);
     c1 = barret::multiply<2, 3, 6>(c1, consts, consts, consts);
   }
