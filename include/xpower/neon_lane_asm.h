@@ -46,4 +46,13 @@ inline int16x8_t vmlsq_laneq_s16_asm(int16x8_t vd, int16x8_t v1, int16x8_t v2) {
   return vd;
 }
 
+template <int LANE>
+inline int32x4_t vqrdmulhq_laneq_s32_asm(int32x4_t v1, int32x4_t v2) {
+  int32x4_t vd;
+  asm ("sqrdmulh %[vd].4s, %[v1].4s, %[v2].s[%[lane]]"
+      : [vd] "=w" (vd)
+      : [v1] "w" (v1), [v2] "x" (v2), [lane] "I" (LANE));
+  return vd;
+}
+
 #endif // NEON_LANE_ASM_H

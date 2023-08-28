@@ -64,7 +64,7 @@ output mainmul_ref(input in) {
   }
   std::array<int16_t, 1440> out = weighted_conv_ref<1440>(in1_pad, in2_pad, 1);
   for (int i = 0; i < 1440; i++) {
-    out[i] = sntrup761::utils::center_lift(2081 * out[i]);
+    out[i] = sntrup761::utils::center_lift(170 * out[i]);
   }
   return output{out};
 }

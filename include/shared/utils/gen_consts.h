@@ -42,6 +42,10 @@ namespace sntrup761::utils {
     return std::round(double(coef) * (1 << 15) / sntrup761::q);
   }
 
+  constexpr int32_t gen_bar_narrow(int16_t coef) {
+    return std::round(double(coef) * (int64_t(1) << 31) / sntrup761::q);
+  }
+
   template <size_t SZ>
   constexpr std::array<int16_t, SZ> gen_bars(std::array<int16_t, SZ> arr) {
     std::array<int16_t, SZ> bars = {};
