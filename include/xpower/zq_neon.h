@@ -12,10 +12,15 @@ namespace xpower::barret {
     return vqrdmulhq_laneq_s16_asm<BAR_LANE>(in, bar);
   }
 
+  template <int BAR_LANE>
+  inline int16x8_t gen_esti_shl(int16x8_t in, int16x8_t bar) {
+    return vqdmulhq_laneq_s16_asm<BAR_LANE>(in, bar);
+  }
+
   template <int SHIFT, int BAR_LANE>
   inline int16x8_t gen_esti_precise(int16x8_t in, int16x8_t bar) {
-    int16x8_t esti = vqdmulhq_laneq_s16_asm<BAR_LANE>(in, bar);
-    return vrshrq_n_s16(esti, SHIFT);
+    int16x8_t esti_shl = gen_esti_shl<BAR_LANE>(in, bar);
+    return vrshrq_n_s16(esti_shl, SHIFT);
   }
 
   template <int MOD_LANE>

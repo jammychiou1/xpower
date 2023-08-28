@@ -12,6 +12,7 @@ namespace xpower::shared {
   const int16_t _1_bar = 7;
   const int16_t _2_bar = 14;
   const int16_t _4_bar = 29;
+  const int16_t _1_bar_shl12 = 29235;
   const int16_t prim_root = 11;
   const int16_t w10 = sntrup761::utils::gen_pow(prim_root, (q - 1) / 10);
   const int16_t w9 = sntrup761::utils::gen_pow(prim_root, (q - 1) / 9);
@@ -36,6 +37,7 @@ namespace xpower::ntt9 {
   const int16_t red_bar = -4432;
   const int16_t blue_bar = -5731;
   const int16_t green_bar = 13497;
+  const int16_t red_bar_shl2 = -17729;
 }
 
 #endif // CONSTS_H
