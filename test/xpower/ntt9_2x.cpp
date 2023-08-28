@@ -4,6 +4,7 @@
 #include <utility>
 #include <cassert>
 #include <iostream>
+#include <random>
 
 #include "inline/main_lay2.cpp"
 #include "utils/gen_consts.h"
@@ -109,9 +110,31 @@ inout testcase1(int idx) {
   return res;
 }
 
+inout testcase2(int in_range, std::default_random_engine gen) {
+  std::uniform_int_distribution<int16_t> distribution(-in_range, in_range);
+
+  inout res;
+  for (int k = 0; k < 8; k++) {
+    std::array<int16_t, 9> fs;
+    for (int j = 0; j < 9; j++) {
+      fs[j] = distribution(gen);
+    }
+    std::array<int16_t, 9> hs = ntt_ref<9>(fs);
+    for (int j = 0; j < 9; j++) {
+      res.first[j][k] = fs[j];
+      res.second[j][k] = sntrup761::utils::center_lift(2 * int64_t(hs[j]));
+    }
+  }
+  return res;
+}
+
 int main() {
   std::array<int, 9> indices = {0, 1, 2, 3, 4, 5, 6, 7, 8};
   for (int idx : indices) {
     assert(run_testcase(testcase1(idx)));
+  }
+  std::default_random_engine generator;
+  for (int t = 0; t < 1000; t++) {
+    assert(run_testcase(testcase2(4000, generator)));
   }
 }
