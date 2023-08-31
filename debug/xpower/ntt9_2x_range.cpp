@@ -25,8 +25,8 @@ void gen_input(int16_t fjs[9][8]) {
 int main() {
   int16_t fjs[9][8];
   int16_t hj_2xs[9][8];
-  int16_t mxs[9] = {};
   int16_t mns[9] = {};
+  int16_t mxs[9] = {};
   for (int t = 0; t < 1000000; t++) {
     gen_input(fjs);
 
@@ -59,13 +59,13 @@ int main() {
 
     for (int j = 0; j < 9; j++) {
       for (int k = 0; k < 8; k++) {
-        mxs[j] = std::max(mxs[j], hj_2xs[j][k]);
         mns[j] = std::min(mns[j], hj_2xs[j][k]);
+        mxs[j] = std::max(mxs[j], hj_2xs[j][k]);
       }
     }
   }
 
   for (int j = 0; j < 9; j++) {
-    std::cout << j << ": " << mxs[j] << ' ' << mns[j] << '\n';
+    std::cout << j << ": " << mns[j] << ' ' << mxs[j] << '\n';
   }
 }

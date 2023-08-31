@@ -1,11 +1,11 @@
 #include <cstdint>
-#include <algorithm>
 #include <iostream>
 #include <random>
+#include <algorithm>
 
-#include "basemul.h"
+#include "main_lay2.h"
 
-const int in_range = 8100;
+const int in_range = 2700;
 
 int16_t roll() {
   static std::default_random_engine generator;
@@ -13,13 +13,12 @@ int16_t roll() {
   return distribution(generator);
 }
 
-void gen_input(int16_t in1_arr[10][2][9][8], int16_t in2_arr[10][2][9][8]) {
+void gen_input(int16_t arr[10][2][9][8]) {
   for (int i = 0; i < 10; i++) {
     for (int k0 = 0; k0 < 2; k0++) {
       for (int j = 0; j < 9; j++) {
         for (int k = 0; k < 8; k++) {
-          in1_arr[i][k0][j][k] = roll();
-          in2_arr[i][k0][j][k] = roll();
+          arr[i][k0][j][k] = roll();
         }
       }
     }
@@ -27,21 +26,20 @@ void gen_input(int16_t in1_arr[10][2][9][8], int16_t in2_arr[10][2][9][8]) {
 }
 
 int main() {
-  int16_t in1_arr[10][2][9][8];
-  int16_t in2_arr[10][2][9][8];
-  int16_t out_arr[10][2][9][8];
+  int16_t arr[10][2][9][8];
   int16_t mns[10][9] = {};
   int16_t mxs[10][9] = {};
   for (int t = 0; t < 1000000; t++) {
-    gen_input(in1_arr, in2_arr);
+    gen_input(arr);
 
-    xpower::basemul::main_basemul(in1_arr, in2_arr, out_arr);
+    xpower::main_lay2::bwd_inplace(arr);
+
     for (int i = 0; i < 10; i++) {
       for (int k0 = 0; k0 < 2; k0++) {
         for (int j = 0; j < 9; j++) {
           for (int k = 0; k < 8; k++) {
-            mns[i][j] = std::min(mns[i][j], out_arr[i][k0][j][k]);
-            mxs[i][j] = std::max(mxs[i][j], out_arr[i][k0][j][k]);
+            mns[i][j] = std::min(mns[i][j], arr[i][k0][j][k]);
+            mxs[i][j] = std::max(mxs[i][j], arr[i][k0][j][k]);
           }
         }
       }
