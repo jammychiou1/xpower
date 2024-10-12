@@ -244,12 +244,27 @@ namespace xpower::main_lay1 {
     int16x8_t f20 = vaddq_s16(f2, f7);
     int16x8_t f30 = vaddq_s16(f8, f3);
     int16x8_t f40 = vaddq_s16(f4, f9);
+
+		f00 = barret::reduce<2, 0>(f00, shared_consts, shared_consts);
+		f10 = barret::reduce<2, 0>(f10, shared_consts, shared_consts);
+		f20 = barret::reduce<2, 0>(f20, shared_consts, shared_consts);
+		f30 = barret::reduce<2, 0>(f30, shared_consts, shared_consts);
+		f40 = barret::reduce<2, 0>(f40, shared_consts, shared_consts);
+
     ntt5_4x(f00, f10, f20, f30, f40, h0_4x, h2_4x, h4_4x, h6_4x, h8_4x);
+
     int16x8_t f01 = vsubq_s16(f0, f5);
     int16x8_t f11 = vsubq_s16(f6, f1);
     int16x8_t f21 = vsubq_s16(f2, f7);
     int16x8_t f31 = vsubq_s16(f8, f3);
     int16x8_t f41 = vsubq_s16(f4, f9);
+
+		f01 = barret::reduce<2, 0>(f01, shared_consts, shared_consts);
+		f11 = barret::reduce<2, 0>(f11, shared_consts, shared_consts);
+		f21 = barret::reduce<2, 0>(f21, shared_consts, shared_consts);
+		f31 = barret::reduce<2, 0>(f31, shared_consts, shared_consts);
+		f41 = barret::reduce<2, 0>(f41, shared_consts, shared_consts);
+
     ntt5_4x(f01, f11, f21, f31, f41, h5_4x, h7_4x, h9_4x, h1_4x, h3_4x);
   }
 
