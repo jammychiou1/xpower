@@ -5,7 +5,7 @@
 
 #include "basemul.h"
 
-const int in_range = 8100;
+const int in_range = 8420;
 
 int16_t roll() {
   static std::default_random_engine generator;

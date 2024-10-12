@@ -5,7 +5,7 @@
 
 #include "main_lay2.h"
 
-const int in_range = 3600;
+const int in_range = 3875;
 
 int16_t roll() {
   static std::default_random_engine generator;

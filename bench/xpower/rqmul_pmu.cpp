@@ -65,6 +65,7 @@ int main() {
 
   std::sort(records, records + 1000);
   std::cout << records[500]  << '\n';
-  // std::cerr << records[0] << ' ' << records[999] << '\n';
+  std::cerr << records[0] << ' ' << records[999] << '\n';
+  std::cerr << records[250] << ' ' << records[750] << '\n';
 }
 
