@@ -37,7 +37,7 @@ namespace xpower::low_lay1 {
     }
   }
 
-  void bwd_insert(int16_t arr[10][2][8], int16_t low_poly[96]) {
+  void bwd_insert(int16_t arr[10][2][8], int16_t out_full[1528]) {
     for (int k0 = 0; k0 < 2; k0++) {
       int16x8_t f0_40x, f1_40x, f2_40x, f3_40x, f4_40x, f5_40x, f6_40x, f7_40x, f8_40x, f9_40x;
 
@@ -55,12 +55,28 @@ namespace xpower::low_lay1 {
       intt10_40x_nof3456(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9,
           f0_40x, f1_40x, f2_40x, f7_40x, f8_40x, f9_40x);
 
-      vst1q_s16(&low_poly[8 * k0], f7_40x);
-      vst1q_s16(&low_poly[16 + 8 * k0], f8_40x);
-      vst1q_s16(&low_poly[32 + 8 * k0], f9_40x);
-      vst1q_s16(&low_poly[48 + 8 * k0], f0_40x);
-      vst1q_s16(&low_poly[64 + 8 * k0], f1_40x);
-      vst1q_s16(&low_poly[80 + 8 * k0], f2_40x);
+      int16x8_t g0 = vld1q_s16(&out_full[     1440 + 8 * k0]);
+      int16x8_t g1 = vld1q_s16(&out_full[16 + 1440 + 8 * k0]);
+      int16x8_t g2 = vld1q_s16(&out_full[32 + 1440 + 8 * k0]);
+      int16x8_t g3 = vld1q_s16(&out_full[48 + 1440 + 8 * k0]);
+      int16x8_t g4 = vld1q_s16(&out_full[64 + 1440 + 8 * k0]);
+
+      vst1q_s16(&out_full[     8 * k0], f7_40x);
+      vst1q_s16(&out_full[16 + 8 * k0], f8_40x);
+      vst1q_s16(&out_full[32 + 8 * k0], f9_40x);
+      vst1q_s16(&out_full[48 + 8 * k0], f0_40x);
+      vst1q_s16(&out_full[64 + 8 * k0], f1_40x);
+
+      vst1q_s16(&out_full[     1440 + 8 * k0], vsubq_s16(g0, f7_40x));
+      vst1q_s16(&out_full[16 + 1440 + 8 * k0], vsubq_s16(g1, f8_40x));
+      vst1q_s16(&out_full[32 + 1440 + 8 * k0], vsubq_s16(g2, f9_40x));
+      vst1q_s16(&out_full[48 + 1440 + 8 * k0], vsubq_s16(g3, f0_40x));
+      vst1q_s16(&out_full[64 + 1440 + 8 * k0], vsubq_s16(g4, f1_40x));
+
+      if (k0 == 0) {
+        out_full[80] = vgetq_lane_s16(f2_40x, 0);
+        // out_full[1520] -= out_full[80];
+      }
     }
   }
 }

@@ -46,6 +46,11 @@ namespace xpower::main_lay1 {
     return (81 * i + 10 * j) % 90 * 16;
   }
 
+  constexpr int insert_base(int i, int j, int k0) {
+    int tmp = poly_base(i, j) + 8 * k0;
+    return (tmp < 80) ? tmp + 1440 : tmp;
+  }
+
   inline void twist_his(
       int16x8_t &h0_4x, int16x8_t &h1_4x, int16x8_t &h2_4x, int16x8_t &h3_4x, int16x8_t &h4_4x,
       int16x8_t &h5_4x, int16x8_t &h6_4x, int16x8_t &h7_4x, int16x8_t &h8_4x, int16x8_t &h9_4x, int j) {
@@ -132,7 +137,7 @@ namespace xpower::main_lay1 {
     }
   }
 
-  void bwd_insert(int16_t arr[10][2][9][8], int16_t main_poly[1440]) {
+  void bwd_insert(int16_t arr[10][2][9][8], int16_t out_full[1528]) {
     for (int j = 0; j < 9; j++) {
       for (int k0 = 0; k0 < 2; k0++) {
         int16x8_t f0_40x, f1_40x, f2_40x, f3_40x, f4_40x, f5_40x, f6_40x, f7_40x, f8_40x, f9_40x;
@@ -152,17 +157,22 @@ namespace xpower::main_lay1 {
             f0_40x, f1_40x, f2_40x, f3_40x, f4_40x,
             f5_40x, f6_40x, f7_40x, f8_40x, f9_40x);
 
-        vst1q_s16(&main_poly[poly_base(0, j) + 8 * k0], f0_40x);
-        vst1q_s16(&main_poly[poly_base(1, j) + 8 * k0], f1_40x);
-        vst1q_s16(&main_poly[poly_base(2, j) + 8 * k0], f2_40x);
-        vst1q_s16(&main_poly[poly_base(3, j) + 8 * k0], f3_40x);
-        vst1q_s16(&main_poly[poly_base(4, j) + 8 * k0], f4_40x);
-        vst1q_s16(&main_poly[poly_base(5, j) + 8 * k0], f5_40x);
-        vst1q_s16(&main_poly[poly_base(6, j) + 8 * k0], f6_40x);
-        vst1q_s16(&main_poly[poly_base(7, j) + 8 * k0], f7_40x);
-        vst1q_s16(&main_poly[poly_base(8, j) + 8 * k0], f8_40x);
-        vst1q_s16(&main_poly[poly_base(9, j) + 8 * k0], f9_40x);
+        vst1q_s16(&out_full[insert_base(0, j, k0)], f0_40x);
+        vst1q_s16(&out_full[insert_base(1, j, k0)], f1_40x);
+        vst1q_s16(&out_full[insert_base(2, j, k0)], f2_40x);
+        vst1q_s16(&out_full[insert_base(3, j, k0)], f3_40x);
+        vst1q_s16(&out_full[insert_base(4, j, k0)], f4_40x);
+        vst1q_s16(&out_full[insert_base(5, j, k0)], f5_40x);
+        vst1q_s16(&out_full[insert_base(6, j, k0)], f6_40x);
+        vst1q_s16(&out_full[insert_base(7, j, k0)], f7_40x);
+        vst1q_s16(&out_full[insert_base(8, j, k0)], f8_40x);
+        vst1q_s16(&out_full[insert_base(9, j, k0)], f9_40x);
       }
     }
+
+    out_full[1520] = out_full[80];
+    // out_full[80] = 0;
+    // out_full[80] should be set to zero here,
+    // but it will be overwritten later in low part
   }
 }

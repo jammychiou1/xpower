@@ -9,59 +9,41 @@
 #include "lowmul.h"
 
 namespace xpower::rqmul {
-  void crt(int16_t out_poly[768], int16_t out_main[1441], int16_t out_low[81]) {
-    out_main[1440] = out_main[0];
-    for (int i = 0; i < 680; i += 8) {
-      int16x8_t a = vld1q_s16(&out_main[i + 760]);
-      int16x8_t b = vld1q_s16(&out_main[i + 761]);
-      int16x8_t c;
-      c = vaddq_s16(a, b);
-      vst1q_s16(&out_poly[i], c);
+
+  void crt(int16_t out_full[1528]) {
+    int16x8_t consts = {shared::q, shared::_1_bar, 0, 0, 0, 0, 0, 0};
+
+    for (int i = 760; i < 1520; i += 8) {
+      int16x8_t a = vld1q_s16(&out_full[i]);
+      a = barret::reduce<1, 0>(a, consts, consts);
+      vst1q_s16(&out_full[i], a);
     }
-    for (int i = 680; i < 760; i += 8) {
-      int16x8_t a = vld1q_s16(&out_main[i - 680]);
-      int16x8_t b = vld1q_s16(&out_main[i - 679]);
-      int16x8_t c;
-      c = vaddq_s16(a, b);
-      vst1q_s16(&out_poly[i], c);
+    {
+      // TODO: use better scaler instructions
+      int32_t esti = (int32_t(out_full[1520]) * shared::_1_bar + (1 << 14)) >> 15;
+      out_full[1520] -= esti * shared::q;
     }
-    out_poly[760] = out_main[80];
-    out_poly[0] -= out_main[760];
-    for (int i = 81; i < 761; i += 8) {
-      int16x8_t a = vld1q_s16(&out_main[i]);
-      int16x8_t c = vld1q_s16(&out_poly[i]);
-      c = vaddq_s16(c, a);
-      vst1q_s16(&out_poly[i], c);
+
+    for (int i = 0; i < 760; i += 8) {
+      int16x8_t a = vld1q_s16(&out_full[i + 760]);
+      int16x8_t b = vld1q_s16(&out_full[i + 761]);
+      int16x8_t c = vld1q_s16(&out_full[i]);
+      vst1q_s16(&out_full[i], vaddq_s16(c, vaddq_s16(a, b)));
     }
-    for (int i = 680; i < 760; i += 8) {
-      int16x8_t a = vld1q_s16(&out_low[i - 680]);
-      int16x8_t b = vld1q_s16(&out_low[i - 679]);
-      a = vaddq_s16(a, b);
-      int16x8_t c = vld1q_s16(&out_poly[i]);
-      c = vsubq_s16(c, a);
-      vst1q_s16(&out_poly[i], c);
-    }
-    out_poly[679] -= out_low[0];
-    out_poly[760] -= out_low[80];
-    for (int i = 0; i < 80; i += 8) {
-      int16x8_t a = vld1q_s16(&out_low[i]);
-      int16x8_t c = vld1q_s16(&out_poly[i]);
-      c = vaddq_s16(c, a);
-      vst1q_s16(&out_poly[i], c);
-    }
-    out_poly[80] += out_low[80];
+    out_full[0] -= out_full[760];
+    out_full[760] += out_full[1520];
   }
 
   const int16_t inv_170 = -27;
   const int16_t inv_170_bar = sntrup761::utils::gen_bar(inv_170);
-  void scale_freeze(int16_t out_poly[768]) {
+  void scale_freeze(int16_t out_full[1528], int16_t out_poly[768]) {
     int16x8_t qs = vdupq_n_s16(shared::q);
     int16x8_t half_qs = vdupq_n_s16((shared::q - 1) / 2);
     int16x8_t neg_half_qs = vdupq_n_s16(-(shared::q - 1) / 2);
     int16x8_t consts = {inv_170, inv_170_bar, 0, 0, 0, 0, 0, 0};
 
     for (int i = 0; i < 768; i += 8 * 4) {
-      int16x8x4_t chunks = vld1q_s16_x4(&out_poly[i]);
+      int16x8x4_t chunks = vld1q_s16_x4(&out_full[i]);
 
       chunks.val[0] = barret::multiply<0, 1, 0>(chunks.val[0], consts, consts, qs);
       chunks.val[1] = barret::multiply<0, 1, 0>(chunks.val[1], consts, consts, qs);
@@ -83,13 +65,12 @@ namespace xpower::rqmul {
   }
 
   void rqmul(const int16_t in1_poly[768], const int16_t in2_poly[768], int16_t out_poly[768]) {
-    static int16_t out_main[1441];
-    static int16_t out_low[96];
+    static int16_t out_full[1528];
 
-    mainmul::mainmul(in1_poly, in2_poly, out_main);
-    lowmul::lowmul(in1_poly, in2_poly, out_low);
-    crt(out_poly, out_main, out_low);
-    scale_freeze(out_poly);
+    mainmul::mainmul(in1_poly, in2_poly, out_full);
+    lowmul::lowmul(in1_poly, in2_poly, out_full);
+    crt(out_full);
+    scale_freeze(out_full, out_poly);
   }
 }
 

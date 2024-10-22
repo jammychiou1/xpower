@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace xpower::lowmul {
-  void lowmul(const int16_t in1_low[81], const int16_t in2_low[81], int16_t out_low[96]);
+  void lowmul(const int16_t in1_low[81], const int16_t in2_low[81], int16_t out_full[1528]);
 }
 
 #endif // LOWMUL_H

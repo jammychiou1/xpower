@@ -7,7 +7,7 @@
 #include "basemul.h"
 
 namespace xpower::mainmul {
-  void mainmul(const int16_t in1_main[768], const int16_t in2_main[768], int16_t out_main[1440]) {
+  void mainmul(const int16_t in1_main[768], const int16_t in2_main[768], int16_t out_full[1528]) {
     static int16_t in1_arr[10][2][9][8];
     static int16_t in2_arr[10][2][9][8];
     static int16_t out_arr[10][2][9][8];
@@ -18,6 +18,6 @@ namespace xpower::mainmul {
     main_lay2::fwd_inplace(in2_arr);
     basemul::main_basemul(in1_arr, in2_arr, out_arr);
     main_lay2::bwd_inplace(out_arr);
-    main_lay1::bwd_insert(out_arr, out_main);
+    main_lay1::bwd_insert(out_arr, out_full);
   }
 }
