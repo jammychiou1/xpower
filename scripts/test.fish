@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 mkdir tmp
 for i in (seq 10)
-    ./build/debug/xpower/rqmul_full_dbg < ./scripts/testcases/$i.in > ./tmp/out
+    ./build/debug/xpower/rqmul_dbg < ./scripts/testcases/$i.in > ./tmp/out
     if not diff -q ./scripts/testcases/$i.out ./tmp/out
         rm -r tmp
     end

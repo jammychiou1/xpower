@@ -1,4 +1,4 @@
-set(BENCH karatsuba_radix2 main_lay1_fwd_extract main_lay1_bwd_insert main_lay2_fwd_inplace main_lay2_bwd_inplace main_forward main_backward mainmul lowmul rqmul rqmul_pmu crt scale_freeze)
+set(BENCH rqmul rqmul_pmu)
 
 foreach(X IN LISTS BENCH)
   add_executable("${X}_bench" "${X}.cpp")

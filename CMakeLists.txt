@@ -32,6 +32,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_compile_options(-Winline)
 
 add_subdirectory(src)
-# add_subdirectory(test)
 add_subdirectory(debug)
 add_subdirectory(bench)
