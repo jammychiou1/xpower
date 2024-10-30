@@ -9,9 +9,9 @@
 
 namespace xpower::lowmul {
   void lowmul(const int16_t in1_low[81], const int16_t in2_low[81], int16_t out_full[1528]) {
-    static int16_t in1_arr[10][2][8];
-    static int16_t in2_arr[10][2][8];
-    static int16_t out_arr[10][2][8];
+    int16_t in1_arr[10][2][8];
+    int16_t in2_arr[10][2][8];
+    int16_t out_arr[10][2][8];
 
     low_lay1::fwd_extract(in1_arr, in1_low);
     low_lay1::fwd_extract(in2_arr, in2_low);

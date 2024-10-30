@@ -8,9 +8,9 @@
 
 namespace xpower::mainmul {
   void mainmul(const int16_t in1_main[768], const int16_t in2_main[768], int16_t out_full[1528]) {
-    static int16_t in1_arr[10][2][9][8];
-    static int16_t in2_arr[10][2][9][8];
-    static int16_t out_arr[10][2][9][8];
+    int16_t in1_arr[10][2][9][8];
+    int16_t in2_arr[10][2][9][8];
+    int16_t out_arr[10][2][9][8];
 
     main_lay1::fwd_extract(in1_arr, in1_main);
     main_lay2::fwd_inplace(in1_arr);

@@ -65,7 +65,7 @@ namespace xpower::rqmul {
   }
 
   void rqmul(const int16_t in1_poly[768], const int16_t in2_poly[768], int16_t out_poly[768]) {
-    static int16_t out_full[1528];
+    int16_t out_full[1528];
 
     mainmul::mainmul(in1_poly, in2_poly, out_full);
     lowmul::lowmul(in1_poly, in2_poly, out_full);
