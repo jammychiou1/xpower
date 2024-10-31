@@ -43,6 +43,14 @@ namespace xpower::low_lay1 {
     return barret::use_esti<0>(lhalf, esti, shared_consts);
   }
 
+  inline int16x8_t bar_esti_crude(int16x8_t in) {
+    return barret::gen_esti_crude_redc(in);
+  }
+
+  inline int16x8_t bar_esti_4(int16x8_t in) {
+    return barret::gen_esti<1>(in, shared_consts);
+  }
+
   inline int16x8_t bar_esti_green(int16x8_t in) {
     return barret::gen_esti<5>(in, ntt5_consts);
   }
@@ -174,10 +182,10 @@ namespace xpower::low_lay1 {
     int16x8_t ci1 = vaddq_s16(f2, f3);
 
     int16x8_t ct0i = vaddq_s16(ci0, ci1);
-    int16x8_t f0_4x = vshlq_n_s16(f0, 2);
 
-    int16x8_t ct0o = vsubq_s16(f0_4x, ct0i);
-    ct0o = bar_crude_redc(ct0o);
+    int16x8_t esti = vsubq_s16(bar_esti_4(f0), bar_esti_crude(ct0i));;
+    int16x8_t ct0o = vsubq_s16(vshlq_n_s16(f0, 2), ct0i);
+    ct0o = bar_use_esti(ct0o, esti);
 
     int16x8_t ct1i = vsubq_s16(ci0, ci1);
 
@@ -213,12 +221,16 @@ namespace xpower::low_lay1 {
     int16x8_t ci1 = vaddq_s16(f2, f3);
 
     int16x8_t ct0i = vaddq_s16(ci0, ci1);
-    int16x8_t h0 = vaddq_s16(f0, ct0i);
-    h0_4x = bar_mul_4(h0);
+    int16x8_t esti_ct0i_4x = bar_esti_4(ct0i);
+
+    int16x8_t esti_f0_4x = bar_esti_4(f0);
     int16x8_t f0_4x = vshlq_n_s16(f0, 2);
 
+    h0_4x = vaddq_s16(f0_4x, vshlq_n_s16(ct0i, 2));
+    h0_4x = bar_use_esti(h0_4x, vaddq_s16(esti_f0_4x, esti_ct0i_4x));
+
     int16x8_t ct0o = vsubq_s16(f0_4x, ct0i);
-    ct0o = bar_crude_redc(ct0o);
+    ct0o = bar_use_esti(ct0o, vsubq_s16(esti_f0_4x, vshrq_n_s16(esti_ct0i_4x, 2)));
 
     int16x8_t ct1i = vsubq_s16(ci0, ci1);
 
