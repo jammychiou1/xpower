@@ -1,4 +1,4 @@
-set(BENCH rqmul rqmul_pmu rqmul_enable_ccr subs_enable_ccr)
+set(BENCH rqmul rqmul_pmu rqmul_enable_ccr subs_pmu subs_enable_ccr)
 
 foreach(X IN LISTS BENCH)
   add_executable("${X}_bench" "${X}.cpp")
